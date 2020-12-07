@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="main11" width="1123" height="793">
+    <defs>
+            <clipPath  id="clip1">
+                <path d="M0 0L842 0L842 0L842 595L842 595L3.643325E-14 595L3.643325E-14 595L0 0z" />
+            </clipPath>
+                <clipPath  id="clip2">
+                    <path d="M802 40L802 555L802 555L40 555L40 555L40 40z" />
+                </clipPath>
+    </defs>
+	<g transform="matrix(1.333333 0 0 1.333333 0 0)">
+		<g clip-path="url(#clip1)" >
+			<g clip-path="url(#clip2)" >
+				<text style="fill:#ff0000;font-family:Arial;" font-size="15" transform="matrix(6.123234E-17 1 -1 6.123234E-17 786.705 70)" x="0" y="0">Spire.PDF</text>
+				<text style="fill:#000000;font-family:Arial;" font-size="10" xml:space="preserve" transform="matrix(6.123234E-17 1 -1 6.123234E-17 770.03 70)" x="0" y="0">Free&#160;version&#160;is&#160;limited&#160;to&#160;10&#160;pages&#160;of&#160;PDF.</text>
+				<text style="fill:#000000;font-family:Arial;" font-size="10" xml:space="preserve" transform="matrix(6.123234E-17 1 -1 6.123234E-17 758.47 70)" x="0" y="0">This&#160;limitation&#160;is&#160;enforced&#160;during&#160;loading&#160;and&#160;creating&#160;files.</text>
+				<text style="fill:#000000;font-family:Arial;" font-size="10" xml:space="preserve" transform="matrix(6.123234E-17 1 -1 6.123234E-17 746.91 70)" x="0" y="0">When&#160;converting&#160;PDF&#160;to&#160;Image,&#160;the&#160;first&#160;10&#160;pages&#160;of&#160;PDF&#160;files&#160;will&#160;be&#160;converted&#160;to&#160;Image&#160;format&#160;successfully.</text>
+				<text style="fill:#0000ff;font-family:Arial;" font-size="10" xml:space="preserve" transform="matrix(6.123234E-17 1 -1 6.123234E-17 728.47 70)" x="0" y="0">Upgrade&#160;to&#160;Commercial&#160;Edition&#160;of&#160;Spire.PDF(http://www.e-iceblue.com/Introduce/pdf-for-java.html)</text>
+			</g>
+		</g>
+	</g>
+</svg>

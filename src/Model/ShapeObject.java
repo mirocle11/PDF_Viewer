@@ -24,6 +24,16 @@ public class ShapeObject {
     Pane pane;
     Tools tools;
     ContextMenu contextMenu;
+    double area = 0;
+    double length = 0;
+    String structure;
+    String wallType;
+    String wall;
+    String material;
+    String stud_height;
+    String unit;
+    String labour;
+    String cladding_name;
 
     public ShapeObject() {
         java.awt.Color c = new java.awt.Color(0, true);
@@ -78,6 +88,22 @@ public class ShapeObject {
         stampLists.forEach(shape1 -> {
             this.stampList.add(shape1);
         });
+    }
+
+    public double getArea() {
+        return area;
+    }
+
+    public void setArea(double area) {
+        this.area = area;
+    }
+
+    public double getLength() {
+        return length;
+    }
+
+    public void setLength(double length) {
+        this.length = length;
     }
 
     public void setPointList(ArrayList<Point2D> pointLists) {
@@ -197,5 +223,60 @@ public class ShapeObject {
         polygon.setOpacity(.3);
     }
 
+    public String getStructure() {
+        return structure;
+    }
+
+    public void setStructure(String structure) {
+        this.structure = structure;
+    }
+
+    public String getWallType() {
+        return wallType;
+    }
+
+    public void setWallType(String wallType) {
+        this.wallType = wallType;
+    }
+
+    public String getWall() {
+        return wall;
+    }
+
+    public void setWall(String wall) {
+        this.wall = wall;
+    }
+
+    public String getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(String material) {
+        this.material = material;
+    }
+
+    public String getStud_height() {
+        return stud_height;
+    }
+
+    public void setStud_height(String stud_height) {
+        this.stud_height = stud_height;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public String getLabour() {
+        return labour;
+    }
+
+    public void setLabour(String labour) {
+        this.labour = labour;
+    }
 }
 

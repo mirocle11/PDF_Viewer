@@ -2,6 +2,9 @@
   <dictionary name="User">
     <words>
       <w>isset</w>
+      <w>segoe</w>
+      <w>xdiff</w>
+      <w>ydiff</w>
     </words>
   </dictionary>
 </component>

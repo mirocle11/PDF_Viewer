@@ -17,8 +17,10 @@ import javafx.scene.shape.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Lines implements IMeasurement {
-
+/**
+ * Created by User on 17/02/2020.
+ */
+public class Length implements IMeasurement {
     Tools tools;
     boolean isNew = true;
     Line line;
@@ -33,7 +35,7 @@ public class Lines implements IMeasurement {
     double snapX = -1, snapY = -1;
     ContextMenu contextMenu;
 
-    public Lines(Tools tools) {
+    public Length(Tools tools) {
         this.tools = tools;
         this.line = tools.line;
         this.line.setStroke(tools.color);
@@ -42,13 +44,13 @@ public class Lines implements IMeasurement {
         this.pane = tools.pane;
         this.group = tools.group;
         this.page = tools.page;
-//        this.snapList = tools.page.getSnapList();
+        this.snapList = tools.page.getSnapList();
 
-        this.tools.window.PANE.setOnMouseClicked(event -> {
+        this.tools.pane.setOnMouseClicked(event -> {
             handleClick(event);
         });
 
-        this.tools.window.PANE.setOnMouseMoved(event -> {
+        this.tools.pane.setOnMouseMoved(event -> {
             handleMouseMove(event);
         });
     }
@@ -158,7 +160,7 @@ public class Lines implements IMeasurement {
         ShapeObject shapeObj = new ShapeObject();
         shapeObj.setPane(pane);
         shapeObj.setStrokeWidth(8 / group.getScaleY());
-        shapeObj.setColor(tools.window.DRAW_COLOR.getValue());
+        shapeObj.setColor(tools.color);
 
         try {
             Point2D p2d = new Point2D(rect.getX() + rect.getHeight() / 2, rect.getY() + rect.getHeight() / 2);
@@ -170,10 +172,19 @@ public class Lines implements IMeasurement {
         }
 
         shapeObj.setPointList(pointList);
-        shapeObj.setType("LINE");
+        shapeObj.setType("LENGTH");
         shapeObj.setTools(tools);
 
         page.getShapeList().add(shapeObj);
+
+//        if (tools.window.stud_height == 0.0) {
+//            tools.studPopup();
+//        } else {
+//            tools.stud_height = tools.window.stud_height;
+//        }
+
+        tools.updateWindow();
+//        System.out.println("Workspace stud height is: " + tools.window.stud_height);
 
         pointList.clear();
     }
@@ -191,7 +202,7 @@ public class Lines implements IMeasurement {
                 tools.updateWindow();
             });
 
-            MenuItem finish = new MenuItem("Complete Line");
+            MenuItem finish = new MenuItem("Finish Line");
             finish.setOnAction(event1 -> {
                 if (pointList.size() >= 2) {
                     handleFinish();

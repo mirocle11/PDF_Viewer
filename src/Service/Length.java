@@ -159,7 +159,7 @@ public class Length implements IMeasurement {
     public void handleFinish() {
         ShapeObject shapeObj = new ShapeObject();
         shapeObj.setPane(pane);
-        shapeObj.setStrokeWidth(8 / group.getScaleY());
+        shapeObj.setStrokeWidth(7 / group.getScaleY());
         shapeObj.setColor(tools.color);
 
         try {
@@ -172,7 +172,7 @@ public class Length implements IMeasurement {
         }
 
         shapeObj.setPointList(pointList);
-        shapeObj.setType("LENGTH");
+        shapeObj.setType("FREE");
         shapeObj.setTools(tools);
 
         page.getShapeList().add(shapeObj);
@@ -196,13 +196,13 @@ public class Length implements IMeasurement {
             contextMenu = new ContextMenu();
             contextMenu.hide();
 
-            MenuItem removeLength = new MenuItem("Remove Line");
+            MenuItem removeLength = new MenuItem("Remove Length");
             removeLength.setOnAction(event1 -> {
                 tools.page.shapeObjList.remove(this);
                 tools.updateWindow();
             });
 
-            MenuItem finish = new MenuItem("Finish Line");
+            MenuItem finish = new MenuItem("Complete Length");
             finish.setOnAction(event1 -> {
                 if (pointList.size() >= 2) {
                     handleFinish();

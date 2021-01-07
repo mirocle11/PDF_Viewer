@@ -17,6 +17,7 @@ public class ShapeObject {
     Color color;
     double strokeWidth;
     List<Line> lineList = new ArrayList<>();
+    public Polyline polyline;
     private ArrayList<Point2D> pointList = new ArrayList<>();
     ArrayList<Shape> stampList = new ArrayList<>();
     List<Rectangle> boxList = new ArrayList<>();
@@ -277,6 +278,14 @@ public class ShapeObject {
 
     public void setLabour(String labour) {
         this.labour = labour;
+    }
+
+    public Polyline getPolyline() {
+        return polyline;
+    }
+
+    public void setPolyline(Polyline polyline) {
+        this.polyline = polyline;
     }
 }
 

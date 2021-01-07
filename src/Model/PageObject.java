@@ -10,6 +10,9 @@ import java.util.ArrayList;
 public class PageObject {
     int pageNumber;
     public ArrayList<ShapeObject> shapeObjList = new ArrayList<>();
+    public ArrayList<StampObject> stampObjectList = new ArrayList<>();
+    public ArrayList<NotesObject> notesObjectList = new ArrayList<>();
+    public ArrayList<PolylineObject> polyLineObjectList = new ArrayList<>();
 
     ArrayList<Shape> stampList = new ArrayList<>();
     ArrayList<double[][]> snapList = new ArrayList<>();
@@ -83,5 +86,29 @@ public class PageObject {
 
     public void setImage(Image image) {
         this.image = image;
+    }
+
+    public ArrayList<StampObject> getStampObjectList() {
+        return stampObjectList;
+    }
+
+    public void setStampObjectList(ArrayList<StampObject> stampObjectList) {
+        this.stampObjectList = stampObjectList;
+    }
+
+    public ArrayList<NotesObject> getNotesObjectList() {
+        return notesObjectList;
+    }
+
+    public void setNotesObjectList(ArrayList<NotesObject> notesObjectList) {
+        this.notesObjectList = notesObjectList;
+    }
+
+    public ArrayList<PolylineObject> getPolyLineObjectList() {
+        return polyLineObjectList;
+    }
+
+    public void setPolyLineObjectList(ArrayList<PolylineObject> polyLineObjectList) {
+        this.polyLineObjectList = polyLineObjectList;
     }
 }

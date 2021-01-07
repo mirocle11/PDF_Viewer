@@ -23,7 +23,7 @@ public class DrawService {
 
         l.setStroke(line.getStroke());
         l.setStrokeLineCap(StrokeLineCap.BUTT);
-        l.setStrokeWidth(8 / scale);
+        l.setStrokeWidth(7 / scale);
         l.setOpacity(.7);
 
         l.setOnMouseEntered(event -> {

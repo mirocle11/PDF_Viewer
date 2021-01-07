@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/PlanEditor/PlanEditor.iml" filepath="$PROJECT_DIR$/PlanEditor/PlanEditor.iml" />
       <module fileurl="file://$PROJECT_DIR$/Plan_Editor.iml" filepath="$PROJECT_DIR$/Plan_Editor.iml" />
     </modules>
   </component>

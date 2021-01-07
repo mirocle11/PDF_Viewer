@@ -3,17 +3,18 @@ package Controllers;
 import Main.Main;
 import Model.PageObject;
 import Model.ShapeObject;
-import Service.FileService;
-import Service.PdfToImageService;
 import Service.Tools;
 import com.jfoenix.controls.JFXButton;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -27,7 +28,7 @@ import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,21 +50,26 @@ public class workspaceController implements Initializable {
             DRAW, STAMP, COMMENT, NOTES, LINE;
     public ColorPicker DRAW_COLOR, NOTES_COLOR;
     public TextField PAGE, NOTES_TXT;
+    public ComboBox<String> STAMP_COLOR;
     public Label TOTAL_PAGE;
-    public Canvas canvas;
+    public Canvas canvas, pane_canvas;
     public Pane pane;
     public ScrollPane scroller;
     public StackPane zoomPane;
     public Group scrollContent, group;
+    public ListView<ImageView> STAMP_LIST;
 
     public ContextMenu FILE_MENU = new ContextMenu();
     public MenuItem FILE_OPEN = new MenuItem("Open");
     public MenuItem FILE_SAVE = new MenuItem("Save");
 
+    public Image[] iconImages;
+
     //collections
     ArrayList<PageObject> pageObjects = new ArrayList<>();
     boolean issetCanvas = false;
     public int notes_indicator;
+    private final ObservableList<String> stamp_color = FXCollections.observableArrayList("Blue", "Red", "Green");
 
     //collections (2)
     List<Shape> shapeList = new ArrayList<>();
@@ -102,6 +108,8 @@ public class workspaceController implements Initializable {
         tools = new Tools(this);
         tools.setMode("FREE");
 
+        STAMP_COLOR.setItems(stamp_color);
+
         scroller.viewportBoundsProperty().addListener((observable, oldValue, newValue) ->
                 zoomPane.setMinSize(newValue.getWidth(), newValue.getHeight()));
 
@@ -109,12 +117,23 @@ public class workspaceController implements Initializable {
             DRAW_OPTIONS.setVisible(true);
             STAMP_OPTIONS.setVisible(false);
             NOTES_OPTIONS.setVisible(false);
+            if (!DRAW_OPTIONS.isVisible()) {
+                tools.setMode("FREE");
+            }
         });
 
         STAMP.setOnAction(event -> {
-            DRAW_OPTIONS.setVisible(false);
-            STAMP_OPTIONS.setVisible(true);
-            NOTES_OPTIONS.setVisible(false);
+            if (!STAMP_OPTIONS.isVisible()) {
+                DRAW_OPTIONS.setVisible(false);
+                STAMP_OPTIONS.setVisible(true);
+                NOTES_OPTIONS.setVisible(false);
+                tools.setMode("STAMP");
+            } else {
+                DRAW_OPTIONS.setVisible(false);
+                STAMP_OPTIONS.setVisible(false);
+                NOTES_OPTIONS.setVisible(false);
+                tools.setMode("FREE");
+            }
         });
 
         NOTES.setOnAction(event -> {
@@ -149,7 +168,7 @@ public class workspaceController implements Initializable {
         });
 
         FILE_SAVE.setOnAction(event -> {
-
+            tools.save();
         });
 
         PREVIOUS_PAGE.setOnAction(event -> {
@@ -160,6 +179,68 @@ public class workspaceController implements Initializable {
             tools.nextPage();
         });
 
+        STAMP_COLOR.setOnAction(event -> {
+            if (!STAMP_COLOR.getSelectionModel().isEmpty()) {
+                createIconList(STAMP_COLOR.getSelectionModel().getSelectedItem());
+            }
+        });
+    }
+
+    public void createIconList(String color) {
+        try {
+            STAMP_LIST.getItems().clear();
+            if (color.equals("Blue")) {
+                String[] iconNames = new String[] { // names of image resource file, in directory stamper_icons
+                        "blue_right.png", "blue_down.png", "blue_left.png", "blue_up.png"
+                };
+
+                iconImages = new Image[iconNames.length];
+
+                String icon_url = "/Views/stamper_icons/";
+
+                for (int i = 0; i < iconNames.length; i++) {
+                    InputStream inputStream = workspaceController.class.getResourceAsStream(icon_url + iconNames[i]);
+                    Image icon = new Image(inputStream);
+                    iconImages[i] = icon;
+                    STAMP_LIST.getItems().add(new ImageView(icon));
+                }
+            }
+            else if (color.equals("Red")) {
+                String[] iconNames = new String[] { // names of image resource file, in directory stamper_icons
+                        "red_right.png", "red_down.png", "red_left.png", "red_up.png"
+                };
+
+                iconImages = new Image[iconNames.length];
+
+                String icon_url = "/Views/stamper_icons/";
+
+                for (int i = 0; i < iconNames.length; i++) {
+                    InputStream inputStream = workspaceController.class.getResourceAsStream(icon_url + iconNames[i]);
+                    Image icon = new Image(inputStream);
+                    iconImages[i] = icon;
+                    STAMP_LIST.getItems().add(new ImageView(icon));
+                }
+            }
+            else if (color.equals("Green")) {
+                String[] iconNames = new String[] { // names of image resource file, in directory stamper_icons
+                        "green_right.png", "green_down.png", "green_left.png", "green_up.png"
+                };
+
+                iconImages = new Image[iconNames.length];
+
+                String icon_url = "/Views/stamper_icons/";
+
+                for (int i = 0; i < iconNames.length; i++) {
+                    InputStream inputStream = workspaceController.class.getResourceAsStream(icon_url + iconNames[i]);
+                    Image icon = new Image(inputStream);
+                    iconImages[i] = icon;
+                    STAMP_LIST.getItems().add(new ImageView(icon));
+                }
+            }
+
+            STAMP_LIST.getSelectionModel().select(0);  //The first item in the list is currently selected.
+        } catch (Exception e) {
+        }
     }
 
     public void lineAction() {
@@ -168,6 +249,14 @@ public class workspaceController implements Initializable {
 
         tools.setColor(DRAW_COLOR.getValue());
         tools.setMode("LENGTH");
+    }
+
+    public void freeFormAction() {
+        isNew = true;
+        canDraw = true;
+
+        tools.setColor(DRAW_COLOR.getValue());
+        tools.setMode("FREE_FORM");
     }
 
     public void updateLine(MouseEvent event) {

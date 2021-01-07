@@ -1,11 +1,13 @@
 package Model;
 
 import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
 
 public class NotesObject {
 
     public int notesNo;
     public Label notes;
+    private Color color;
 
     public int getNotesNo() {
         return notesNo;
@@ -21,5 +23,13 @@ public class NotesObject {
 
     public void setNotes(Label notes) {
         this.notes = notes;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 }

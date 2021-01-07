@@ -12,7 +12,7 @@ import javafx.concurrent.Task;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class PdfToImageService extends Service<PageObject>{
+public class PdfToImageService extends Service<PageObject> {
     File pdf;
     int length;
     PdfDocument document;

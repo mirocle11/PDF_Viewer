@@ -1,14 +1,15 @@
 package Service;
 import Controllers.workspaceController;
-import Model.NotesObject;
-import Model.PageObject;
-import Model.ShapeObject;
+import Model.*;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -16,9 +17,7 @@ import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class Tools {
 
@@ -28,7 +27,7 @@ public class Tools {
     Group group;
     String mode;
     Pane pane;
-    Canvas canvas;
+    Canvas canvas, pane_canvas;
     Line line;
     Circle circle;
     VBox box;
@@ -48,6 +47,7 @@ public class Tools {
 
     // indicator
     public int notes_id = 0;
+    public int stamp_id = 0;
 
     double total;
 
@@ -90,6 +90,7 @@ public class Tools {
         this.pane = window.pane;
         this.scroller = window.scroller;
         this.group = window.group;
+        this.pane_canvas = window.pane_canvas;
         this.contextMenu = new ContextMenu();
         this.stampMenu = new ContextMenu();
 
@@ -105,9 +106,6 @@ public class Tools {
         this.circle.setFill(Color.RED);
         this.circle.setRadius(5);
         this.pane.getChildren().add(circle);
-
-        //stud
-//        this.workspace_stud_height = window.stud_height;
     }
 
     public void open() {
@@ -122,6 +120,16 @@ public class Tools {
                         setPageElements();
                         scroller.setOpacity(1.0);
                         issetCanvas = true;
+                        pane_canvas.setWidth(pane.getWidth());
+                        pane_canvas.setHeight(pane.getHeight());
+
+                        Label lbl = new Label();
+                        lbl.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+                        lbl.setMinWidth(1700);
+                        lbl.setMinHeight(50);
+                        lbl.setLayoutX(10);
+                        lbl.setLayoutY(-5);
+                        pane.getChildren().add(lbl);
                     }
                 }
             });
@@ -131,10 +139,15 @@ public class Tools {
         }
     }
 
+    public void save() {
+        FileService.save(pageObjects);
+    }
+
     public void setMode(String mode) {
         switch (mode) {
             case "FREE":
                 this.canDraw = false;
+                pane_canvas.setVisible(false);
                 window.pane.setOnMouseMoved(event -> {
                     try {
                         for (double[][] arr : snapList) {
@@ -161,10 +174,12 @@ public class Tools {
                 break;
             case "LENGTH":
                 this.canDraw = true;
+                pane_canvas.setVisible(false);
                 Length length = new Length(this);
                 break;
             case "NOTES":
                 this.canDraw = false;
+                pane_canvas.setVisible(false);
                 pane.setOnMouseClicked(event -> {
                     if (event.getButton() == MouseButton.PRIMARY) {
                         Label notes = new Label();
@@ -182,6 +197,7 @@ public class Tools {
 
                         NotesObject notesObject = new NotesObject();
                         notesObject.setNotes(notes);
+                        notesObject.setColor(window.NOTES_COLOR.getValue());
                         notesObject.setNotesNo(notes_id++);
 
                         notes.setOnMouseClicked(event1 -> {
@@ -195,6 +211,180 @@ public class Tools {
                                 });
                                 stampMenu.getItems().add(removeStamp);
                                 stampMenu.show(notes, event1.getScreenX(), event1.getScreenY());
+                            }
+                        });
+                        page.getNotesObjectList().add(notesObject);
+                    }
+                });
+                break;
+            case "STAMP":
+                this.canDraw = false;
+                pane_canvas.setVisible(false);
+                pane.setOnMouseClicked(event -> {
+                    if (event.getButton() == MouseButton.PRIMARY) {
+                        ImageView stamp_img = new ImageView();
+                        StampObject stampObject = new StampObject();
+
+                        int selected_icon = window.STAMP_LIST.getSelectionModel().getSelectedIndex();
+
+                        if (window.STAMP_COLOR.getSelectionModel().getSelectedItem().equals("Blue")) {
+                            switch (selected_icon) {
+                                case 0:
+                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/blue_right.png")));
+                                    stampObject.setImagePath("../Views/stamper_icons/blue_right.png");
+                                    break;
+                                case 1:
+                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/blue_down.png")));
+                                    stampObject.setImagePath("../Views/stamper_icons/blue_down.png");
+                                    break;
+                                case 2:
+                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/blue_left.png")));
+                                    stampObject.setImagePath("../Views/stamper_icons/blue_left.png");
+                                    break;
+                                case 3:
+                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/blue_up.png")));
+                                    stampObject.setImagePath("../Views/stamper_icons/blue_up.png");
+                                    break;
+                            }
+                        }
+                        else if (window.STAMP_COLOR.getSelectionModel().getSelectedItem().equals("Red")) {
+                            switch (selected_icon) {
+                                case 0:
+                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/red_right.png")));
+                                    stampObject.setImagePath("../Views/stamper_icons/red_right.png");
+                                    break;
+                                case 1:
+                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/red_down.png")));
+                                    stampObject.setImagePath("../Views/stamper_icons/red_down.png");
+                                    break;
+                                case 2:
+                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/red_left.png")));
+                                    stampObject.setImagePath("../Views/stamper_icons/red_left.png");
+                                    break;
+                                case 3:
+                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/red_up.png")));
+                                    stampObject.setImagePath("../Views/stamper_icons/red_up.png");
+                                    break;
+                            }
+                        }
+                        else if (window.STAMP_COLOR.getSelectionModel().getSelectedItem().equals("Green")) {
+                            switch (selected_icon) {
+                                case 0:
+                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/green_right.png")));
+                                    stampObject.setImagePath("../Views/stamper_icons/green_right.png");
+                                    break;
+                                case 1:
+                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/green_down.png")));
+                                    stampObject.setImagePath("../Views/stamper_icons/green_down.png");
+                                    break;
+                                case 2:
+                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/green_left.png")));
+                                    stampObject.setImagePath("../Views/stamper_icons/green_left.png");
+                                    break;
+                                case 3:
+                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/green_up.png")));
+                                    stampObject.setImagePath("../Views/stamper_icons/green_up.png");
+                                    break;
+                            }
+                        }
+
+                        Label stamp = new Label();
+                        stamp.setLayoutX(event.getX());
+                        stamp.setLayoutY(event.getY());
+                        stamp.setGraphic(stamp_img);
+
+                        pane.getChildren().add(stamp);
+
+                        System.out.println("stamp path: " + stampObject.getImagePath());
+                        stampObject.setStamp(stamp);
+
+                        stamp.setOnMouseClicked(event1 -> {
+                            if (event1.getButton() == MouseButton.SECONDARY) {
+                                stampMenu = new ContextMenu();
+                                stampMenu.hide();
+
+                                MenuItem removeStamp = new MenuItem("Remove Stamp");
+                                removeStamp.setOnAction(event2 -> {
+                                    stamp.setVisible(false);
+                                });
+                                stampMenu.getItems().add(removeStamp);
+                                stampMenu.show(stamp, event1.getScreenX(), event1.getScreenY());
+                            }
+                        });
+                        page.getStampObjectList().add(stampObject);
+                    }
+                });
+                break;
+            case "FREE_FORM":
+                pane_canvas.setVisible(true);
+                GraphicsContext g = pane_canvas.getGraphicsContext2D();
+                ArrayList<Double> points = new ArrayList<>();
+                pane_canvas.setOnMousePressed(event -> {
+                    points.clear();
+                    if (event.getButton() == MouseButton.PRIMARY) {
+                        double size = 7;
+                        double x = event.getX() - size / 2;
+                        double y = event.getY() - size / 2;
+
+                        g.beginPath();
+                        g.moveTo(x, y);
+                        g.stroke();
+                        g.setLineWidth(size);
+                        g.setStroke(window.DRAW_COLOR.getValue());
+
+                        points.add(x);
+                        points.add(y);
+                    }
+                });
+                pane_canvas.setOnMouseDragged(event -> {
+                    if (event.getButton() == MouseButton.PRIMARY) {
+                        double size = 7;
+                        double x = event.getX() - size / 2;
+                        double y = event.getY() - size / 2;
+
+                        g.lineTo(x, y);
+                        g.stroke();
+                        points.add(x);
+                        points.add(y);
+                    }
+                });
+
+                pane_canvas.setOnMouseReleased(event -> {
+                    if (event.getButton() == MouseButton.PRIMARY) {
+                        double size = 7;
+                        double x = event.getX() - size / 2;
+                        double y = event.getY() - size / 2;
+                        points.add(x);
+                        points.add(y);
+
+                        Polyline polyline = new Polyline();
+                        for (Double point : points) {
+                            polyline.getPoints().add(point);
+                        }
+
+                        polyline.setStroke(window.DRAW_COLOR.getValue());
+                        polyline.setStrokeWidth(size);
+
+                        pane.getChildren().add(polyline);
+                        g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+                        PolylineObject polylineObject = new PolylineObject();
+                        polylineObject.setPolyline(polyline);
+                        polylineObject.setColor(window.DRAW_COLOR.getValue());
+                        polylineObject.setPointList(points);
+                        page.getPolyLineObjectList().add(polylineObject);
+
+                        polyline.setOnMouseClicked(event1 -> {
+                            if (event1.getButton().equals(MouseButton.SECONDARY)) {
+                                stampMenu = new ContextMenu();
+                                stampMenu.hide();
+
+                                MenuItem removeLine = new MenuItem("Remove Line");
+                                removeLine.setOnAction(event2 -> {
+                                    polyline.setVisible(false);
+                                });
+                                stampMenu.getItems().add(removeLine);
+                                stampMenu.show(polyline, event1.getScreenX(), event1.getScreenY());
                             }
                         });
                     }
@@ -245,6 +435,14 @@ public class Tools {
             pageNumber++;
             setPageElements();
             setMode("FREE");
+
+            Label lbl = new Label();
+            lbl.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+            lbl.setMinWidth(1700);
+            lbl.setMinHeight(50);
+            lbl.setLayoutX(10);
+            lbl.setLayoutY(-5);
+            pane.getChildren().add(lbl);
         }
     }
 
@@ -253,6 +451,14 @@ public class Tools {
             pageNumber--;
             setPageElements();
             setMode("FREE");
+
+            Label lbl = new Label();
+            lbl.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+            lbl.setMinWidth(1700);
+            lbl.setMinHeight(50);
+            lbl.setLayoutX(10);
+            lbl.setLayoutY(-5);
+            pane.getChildren().add(lbl);
         }
     }
 
@@ -262,7 +468,7 @@ public class Tools {
         circle.setVisible(false);
 
         for (ShapeObject sp1 : page.getShapeList()) {
-            if (sp1.getType().equals("LINE")) {
+            if (sp1.getType().equals("LENGTH")) {
                 for (Line l : sp1.getLineList()) {
                     Point2D p1 = new Point2D(l.getStartX(), l.getStartY());
                     Point2D p2 = new Point2D(l.getEndX(), l.getEndY());
@@ -298,6 +504,18 @@ public class Tools {
             pane.getChildren().addAll(sp1.getBoxList());
         }
 
+        for (PolylineObject polylineObject : page.getPolyLineObjectList()) {
+            pane.getChildren().addAll(polylineObject.getPolyline());
+        }
+//
+        for (StampObject stampObject : page.getStampObjectList()) {
+            pane.getChildren().addAll(stampObject.getStamp());
+        }
+
+        for (NotesObject notesObject : page.getNotesObjectList()) {
+            pane.getChildren().addAll(notesObject.getNotes());
+        }
+
         pane.getChildren().add(line);
         line.setVisible(false);
         pane.getChildren().forEach(node -> {
@@ -321,6 +539,14 @@ public class Tools {
                 lbl.setFont(new Font("Arial", 18 / group.getScaleY()));
             }
         });
+
+        Label lbl = new Label();
+        lbl.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        lbl.setMinWidth(1700);
+        lbl.setMinHeight(50);
+        lbl.setLayoutX(10);
+        lbl.setLayoutY(-5);
+        pane.getChildren().add(lbl);
     }
 
 }

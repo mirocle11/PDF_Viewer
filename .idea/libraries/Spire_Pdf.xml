@@ -4,6 +4,8 @@
       <root url="jar://$PROJECT_DIR$/libraries/Spire.Pdf.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/libraries/Spire.Pdf.jar!/" />
+    </SOURCES>
   </library>
 </component>

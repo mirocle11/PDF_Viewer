@@ -7,6 +7,7 @@
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
@@ -232,26 +233,6 @@
                      </tooltip>
                   </JFXButton>
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
-                  <JFXButton fx:id="COMMENT" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" prefHeight="50.0" prefWidth="50.0">
-                     <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@images/comments_30px.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <HBox.margin>
-                        <Insets top="5.0" />
-                     </HBox.margin>
-                     <tooltip>
-                        <Tooltip text="Comment">
-                           <font>
-                              <Font size="13.0" />
-                           </font>
-                        </Tooltip>
-                     </tooltip>
-                  </JFXButton>
-                  <Separator orientation="VERTICAL" prefHeight="200.0" />
                   <JFXButton fx:id="NOTES" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" prefHeight="50.0" prefWidth="50.0">
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
@@ -272,6 +253,26 @@
                      </tooltip>
                   </JFXButton>
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
+                  <JFXButton fx:id="COMMENT" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" prefHeight="50.0" prefWidth="50.0" visible="false">
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/comments_30px.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <HBox.margin>
+                        <Insets top="5.0" />
+                     </HBox.margin>
+                     <tooltip>
+                        <Tooltip text="Comment">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </Tooltip>
+                     </tooltip>
+                  </JFXButton>
+                  <Separator orientation="VERTICAL" prefHeight="200.0" visible="false" />
                </children>
             </HBox>
             <HBox fx:id="DRAW_OPTIONS" layoutY="60.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" prefWidth="1270.0" spacing="10.0" style="-fx-border-color: LIGHTGRAY;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="59.0">
@@ -299,7 +300,7 @@
                         <Insets left="-5.0" top="5.0" />
                      </HBox.margin>
                   </Label>
-                  <JFXButton fx:id="FREE_FORM" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" prefHeight="50.0" prefWidth="50.0">
+                  <JFXButton fx:id="FREE_FORM" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" onAction="#freeFormAction" prefHeight="50.0" prefWidth="50.0">
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -372,18 +373,17 @@
                      </HBox.margin>
                   </Label>
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
-                  <ComboBox prefHeight="40.0" prefWidth="90.0" promptText="Symbol">
+                  <ComboBox fx:id="STAMP_COLOR" prefHeight="40.0" prefWidth="90.0" promptText="Color">
                      <HBox.margin>
                         <Insets top="10.0" />
                      </HBox.margin>
                   </ComboBox>
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
-                  <ComboBox prefHeight="40.0" prefWidth="90.0" promptText="Color">
+                  <ListView fx:id="STAMP_LIST" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="HORIZONTAL" prefHeight="50.0" prefWidth="670.0">
                      <HBox.margin>
-                        <Insets top="10.0" />
+                        <Insets top="5.0" />
                      </HBox.margin>
-                  </ComboBox>
-                  <Separator orientation="VERTICAL" prefHeight="200.0" />
+                  </ListView>
                </children>
             </HBox>
             <HBox fx:id="NOTES_OPTIONS" layoutX="10.0" layoutY="36.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" prefWidth="1270.0" spacing="10.0" style="-fx-border-color: LIGHTGRAY;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="59.0">
@@ -446,6 +446,7 @@
                            <children>
                               <Canvas fx:id="canvas" height="660.0" width="885.0" />
                               <Pane fx:id="pane" onMouseDragged="#updateLine" onMouseMoved="#updateLine" prefHeight="660.0" prefWidth="885.0" />
+                              <Canvas fx:id="pane_canvas" height="540.0" visible="false" width="832.0" />
                            </children>
                         </Group>
                      </children>

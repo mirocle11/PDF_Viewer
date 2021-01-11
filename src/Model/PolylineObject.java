@@ -2,6 +2,7 @@ package Model;
 
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 public class PolylineObject {
 
     private Polyline polyline;
+    private List<Line> polyLineList = new ArrayList<>();
     private Color color;
     private ArrayList<Double> pointList = new ArrayList<>();
 
@@ -38,5 +40,13 @@ public class PolylineObject {
 
     public List<Double> getPointList() {
         return this.pointList;
+    }
+
+    public List<Line> getPolyLineList() {
+        return polyLineList;
+    }
+
+    public void setPolyLineList(List<Line> polyLineList) {
+        this.polyLineList = polyLineList;
     }
 }

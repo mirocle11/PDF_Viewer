@@ -5,10 +5,10 @@ import Model.*;
 import com.spire.pdf.PdfDocument;
 import com.spire.pdf.PdfPageBase;
 import com.spire.pdf.graphics.*;
-import com.sun.deploy.net.HttpResponse;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.shape.Line;
 import javafx.stage.FileChooser;
 
 import javax.swing.*;
@@ -16,15 +16,9 @@ import java.awt.*;
 import java.awt.geom.Dimension2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 public class FileService {
@@ -65,6 +59,7 @@ public class FileService {
 
         File file = chooser.showSaveDialog(Main.mainStage);
         if (file != null) {
+            System.out.println("page object : " + pageObjects.size());
             for (int i = 0; i < pageObjects.size(); i++) {
                 PageObject pageObject = pageObjects.get(i);
                 PdfPageBase page = document.getPages().get(i);
@@ -140,13 +135,14 @@ public class FileService {
                     PdfRGBColor pdfRGBColor = new PdfRGBColor(new Color((float) polylineObject.getColor().getRed(),
                             (float) polylineObject.getColor().getGreen(), (float) polylineObject.getColor().getBlue()));
                     PdfPen pen = new PdfPen(pdfRGBColor);
-                    for (int ii = 0; ii < polylineObject.getPointList().size(); ii += 2) {
-                        try {
-                            page.getCanvas().drawLine(pen, polylineObject.getPointList().get(ii), polylineObject.getPointList().get(ii + 1),
-                                    polylineObject.getPointList().get(ii + 2), polylineObject.getPointList().get(ii + 3));
-                        } catch (IndexOutOfBoundsException e) {
-                            e.printStackTrace();
+                    try {
+                        for (int ii = 0; ii < polylineObject.getPolyline().getPoints().size(); ii += 2) {
+                            page.getCanvas().drawLine(pen, polylineObject.getPointList().get(ii) / subX,
+                                    polylineObject.getPointList().get(ii + 1) / subY,
+                                    polylineObject.getPointList().get(ii + 2) / subX,
+                                    polylineObject.getPointList().get(ii + 3) / subY);
                         }
+                    } catch (IndexOutOfBoundsException ignored) {
                     }
                 });
 
@@ -168,7 +164,7 @@ public class FileService {
                     }
 
                     String charset = "UTF-8";
-                    String requestURL = "https://ptbcsitest.net/api/file";
+                    String requestURL = "https://kylecastillon.dev/~kyle/drafty/api/file";
 
                     try {
                         MultipartUtility multipart = new MultipartUtility(requestURL, charset);
@@ -188,6 +184,7 @@ public class FileService {
                     }
                 }
                 page.getCanvas().restore(state);
+                System.out.println("page " + i);
             }
         } else {
             JOptionPane.showMessageDialog(null, "No File selected");
@@ -195,41 +192,5 @@ public class FileService {
         document.close();
     }
 
-    public static void sendPOSTRequest(File file) {
-        try {
-            String post_data = "key1=value1&key2=value2";
-
-            URL url = new URL("https://kylecastillon.dev/~kyle/drafty/api/file");
-            HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
-            httpURLConnection.setRequestMethod("POST");
-            //adding header
-            httpURLConnection.setRequestProperty("file", "Token");
-            httpURLConnection.setRequestProperty("job_id", "1");
-            httpURLConnection.setDoOutput(true);
-
-            //Adding Post Data
-            OutputStream outputStream = httpURLConnection.getOutputStream();
-            outputStream.write(post_data.getBytes());
-            outputStream.flush();
-            outputStream.close();
-
-            System.out.println("Response Code " + httpURLConnection.getResponseCode());
-
-            String line = "";
-            InputStreamReader inputStreamReader = new InputStreamReader(httpURLConnection.getInputStream());
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            StringBuilder response = new StringBuilder();
-            while ((line = bufferedReader.readLine()) != null) {
-                response.append(line);
-            }
-            bufferedReader.close();
-            System.out.println("Response : " + response.toString());
-
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            System.out.println("Error in Making POST Request");
-        }
-    }
 
 }

@@ -2,6 +2,7 @@ package Service;
 
 import Main.Main;
 import Model.*;
+import com.spire.pdf.PdfCompressionLevel;
 import com.spire.pdf.PdfDocument;
 import com.spire.pdf.PdfPageBase;
 import com.spire.pdf.graphics.*;
@@ -44,12 +45,11 @@ public class FileService {
     }
 
     public static void save(ArrayList<PageObject> pageObjects) {
-        PdfDocument document;
-
+        PdfDocument doc = new PdfDocument();
         chooser.setTitle("Save PDF");
 
-        document = new PdfDocument();
-        document.loadFromFile(pdf.getAbsolutePath());
+        doc.setCompressionLevel(PdfCompressionLevel.None);
+        doc.loadFromFile(pdf.getAbsolutePath());
 
         BufferedImage bufferedImage;
         ArrayList<ShapeObject> shapeObjList;
@@ -59,14 +59,11 @@ public class FileService {
 
         File file = chooser.showSaveDialog(Main.mainStage);
         if (file != null) {
-            System.out.println("page object : " + pageObjects.size());
-            for (int i = 0; i < pageObjects.size(); i++) {
+            for (int i = 0; i < doc.getPages().getCount(); i++) {
                 PageObject pageObject = pageObjects.get(i);
-                PdfPageBase page = document.getPages().get(i);
+                PdfPageBase page = doc.getPages().get(i);
 
-//                page.getCanvas().setTransparency(0.5f, 0.5f, PdfBlendMode.Normal);
                 PdfGraphicsState state = page.getCanvas().save();
-                page.getCanvas().translateTransform(0, 0);
 
                 bufferedImage = SwingFXUtils.fromFXImage(pageObject.getImage(), null);
 
@@ -78,22 +75,7 @@ public class FileService {
                     PdfRGBColor pdfRGBColor = new PdfRGBColor(new Color((float) shapeObject.getColor().getRed(),
                             (float) shapeObject.getColor().getGreen(), (float) shapeObject.getColor().getBlue()));
                     PdfFont font = new PdfFont(PdfFontFamily.Helvetica, 8);
-                    if (shapeObject.getType().equals("AREA")) {
-                        int ndx = 0;
-                        PdfBrush brush = new PdfSolidBrush(new PdfRGBColor(pdfRGBColor));
-                        java.awt.geom.Point2D[] points = new java.awt.geom.Point2D[shapeObject.getPointList().size()];
-                        for (Point2D p2d : shapeObject.getPointList()) {
-                            points[ndx] = new java.awt.geom.Point2D.Double(p2d.getX() / subX, (p2d.getY() / subY) - 1.8);
-                            ndx++;
-                        }
-                        page.getCanvas().drawPolygon(brush, points);
-
-                        PdfPen pens = new PdfPen(pdfRGBColor, 1);
-                        double layX = shapeObject.getPolygon().getBoundsInParent().getMinX() + (shapeObject.getPolygon().getBoundsInParent().getWidth()) / 2;
-                        double layY = shapeObject.getPolygon().getBoundsInParent().getMinY() + (shapeObject.getPolygon().getBoundsInParent().getHeight()) / 2;
-                        page.getCanvas().drawString(shapeObject.getArea() + " m²", font, pens, (float) layX / subX, (float) layY / subY);
-
-                    } else if (shapeObject.getType().equals("LENGTH")) {
+                    if (shapeObject.getType().equals("LENGTH")) {
                         PdfPen pens = new PdfPen(pdfRGBColor, 1);
                         shapeObject.getLineList().forEach(line1 -> {
                             Point2D p1 = new Point2D(line1.getStartX(), line1.getStartY());
@@ -123,7 +105,7 @@ public class FileService {
                             (float) notesObject.getColor().getGreen(), (float) notesObject.getColor().getBlue()));
                     PdfPen pen = new PdfPen(pdfRGBColor);
                     page.getCanvas().drawRectangle(pen, notesObject.getNotes().getLayoutX() / subX,
-                            (notesObject.getNotes().getLayoutY() / subY) -1.8, notesObject.getNotes().getWidth() / 2 - 10,
+                            (notesObject.getNotes().getLayoutY() / subY) - 1.8, notesObject.getNotes().getWidth() / 2 - 10,
                             (notesObject.getNotes().getHeight() / 2) - 5);
                     page.getCanvas().drawString(notesObject.getNotes().getText(), font, pen,
                             (notesObject.getNotes().getLayoutX() / subX) + 2,
@@ -146,51 +128,52 @@ public class FileService {
                     }
                 });
 
-                PdfPageBase page1 = document.getPages().get(0);
-                Dimension2D size = page1.getActualSize();
-
-                document.getPages().add(size, new PdfMargins(0));
-
-                if (!file.getName().contains(".")) {
-                    file = new File(file.getAbsolutePath() + ".pdf");
-                    document.saveToFile(file.getAbsolutePath());
-                    try {
-                        PDDocument doc = PDDocument.load(file);
-                        doc.removePage(doc.getNumberOfPages() - 1);
-                        doc.save(file);
-                        doc.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    String charset = "UTF-8";
-                    String requestURL = "https://kylecastillon.dev/~kyle/drafty/api/file";
-
-                    try {
-                        MultipartUtility multipart = new MultipartUtility(requestURL, charset);
-
-                        multipart.addFormField("job_id", "1");
-                        multipart.addFilePart("file", file);
-
-                        List<String> response = multipart.finish();
-
-                        System.out.println("SERVER REPLIED:");
-
-                        for (String line : response) {
-                            System.out.println(line);
-                        }
-                    } catch (IOException exception) {
-                        System.err.println(exception);
-                    }
-                }
+                //Restore graphics
                 page.getCanvas().restore(state);
-                System.out.println("page " + i);
             }
+            // Save pdf file
+            PdfPageBase page1 = doc.getPages().get(0);
+            Dimension2D size = page1.getActualSize();
+
+            doc.getPages().add(size, new PdfMargins(0));
+
+            if (!file.getName().contains(".")) {
+                file = new File(file.getAbsolutePath() + ".pdf");
+                doc.saveToFile(file.getAbsolutePath());
+                try {
+                    PDDocument doc1 = PDDocument.load(file);
+                    doc1.removePage(doc1.getNumberOfPages() - 1);
+                    doc1.save(file);
+                    doc1.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                String charset = "UTF-8";
+                String requestURL = "https://kylecastillon.dev/~kyle/drafty/api/file";
+
+                try {
+                    MultipartUtility multipart = new MultipartUtility(requestURL, charset);
+
+                    multipart.addFormField("job_id", "1");
+                    multipart.addFilePart("file", file);
+
+                    List<String> response = multipart.finish();
+
+                    System.out.println("SERVER REPLIED:");
+
+                    for (String line : response) {
+                        System.out.println(line);
+                    }
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+            }
+//                page.getCanvas().restore(state);
+//                System.out.println("page " + i);
         } else {
             JOptionPane.showMessageDialog(null, "No File selected");
         }
-        document.close();
+        doc.close();
     }
-
-
 }

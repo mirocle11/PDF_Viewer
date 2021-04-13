@@ -1,7 +1,9 @@
 package Service;
 
+import Controllers.loginController;
 import Main.Main;
 import Model.*;
+import Service.Tools;
 import com.spire.pdf.PdfCompressionLevel;
 import com.spire.pdf.PdfDocument;
 import com.spire.pdf.PdfPageBase;
@@ -22,11 +24,15 @@ import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
+import static Service.Tools.job_id;
+
 public class FileService {
 
     public static FileChooser chooser = new FileChooser();
     public static File pdf, tempPdf;
+    private static String file_name;
     public Canvas canvas;
+    public static Tools tools;
 
     public static File open() {
         chooser.setTitle("Select File");
@@ -39,17 +45,22 @@ public class FileService {
             return pdf;
         } else {
             JOptionPane.showMessageDialog(null, "No File selected", "Error",
-                    0, UIManager.getIcon("OptionPane.errorIcon"));
+                     0, UIManager.getIcon("OptionPane.errorIcon"));
             return null;
         }
     }
-
+//C:\Users\User\Documents\
     public static void save(ArrayList<PageObject> pageObjects) {
         PdfDocument doc = new PdfDocument();
         chooser.setTitle("Save PDF");
 
-        doc.setCompressionLevel(PdfCompressionLevel.None);
-        doc.loadFromFile(pdf.getAbsolutePath());
+        try {
+            doc.setCompressionLevel(PdfCompressionLevel.None);
+            doc.loadFromFile(pdf.getAbsolutePath());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Saving failed, please wait for the " +
+                    "pdf file to load completely and try again.");
+        }
 
         BufferedImage bufferedImage;
         ArrayList<ShapeObject> shapeObjList;
@@ -62,8 +73,9 @@ public class FileService {
             for (int i = 0; i < doc.getPages().getCount(); i++) {
                 PageObject pageObject = pageObjects.get(i);
                 PdfPageBase page = doc.getPages().get(i);
-
+                page.getCanvas().setTransparency(0.5f, 0.5f, PdfBlendMode.Normal);
                 PdfGraphicsState state = page.getCanvas().save();
+                page.getCanvas().translateTransform(0, 0);
 
                 bufferedImage = SwingFXUtils.fromFXImage(pageObject.getImage(), null);
 
@@ -150,12 +162,12 @@ public class FileService {
                 }
 
                 String charset = "UTF-8";
-                String requestURL = "https://kylecastillon.dev/~kyle/drafty/api/file";
+                String requestURL = "https://thedraftingzone.com/api/plan-editor-file";
 
                 try {
                     MultipartUtility multipart = new MultipartUtility(requestURL, charset);
-
-                    multipart.addFormField("job_id", "1");
+                    multipart.addFormField("tdz_ref", job_id);
+                    multipart.addFormField("user", loginController.name);
                     multipart.addFilePart("file", file);
 
                     List<String> response = multipart.finish();
@@ -169,8 +181,6 @@ public class FileService {
                     exception.printStackTrace();
                 }
             }
-//                page.getCanvas().restore(state);
-//                System.out.println("page " + i);
         } else {
             JOptionPane.showMessageDialog(null, "No File selected");
         }

@@ -14,7 +14,9 @@ public interface IMeasurement {
 
     public abstract void handleMouseMove(MouseEvent event);
 
-    public abstract void handleFinish();
+//    public abstract void handleFinish();
+
+    void handleFinish();
 
     public abstract void handleShowContextMenu(MouseEvent event);
 

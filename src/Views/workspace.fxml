@@ -19,13 +19,14 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1270.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.workspaceController">
+<BorderPane fx:id="BORDER_PANE" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1270.0" stylesheets="@CSS/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.workspaceController">
    <top>
       <AnchorPane prefHeight="120.0" prefWidth="1270.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox prefHeight="60.0" prefWidth="1270.0" spacing="10.0" style="-fx-border-color: LIGHTGRAY;" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <HBox prefHeight="60.0" prefWidth="1015.0" spacing="10.0" style="-fx-border-color: LIGHTGRAY;" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="255.0" AnchorPane.topAnchor="0.0">
                <children>
                   <JFXButton fx:id="FILE" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" prefHeight="50.0" prefWidth="50.0">
                      <HBox.margin>
@@ -46,25 +47,6 @@
                         </Tooltip>
                      </tooltip></JFXButton>
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
-                  <JFXButton fx:id="START_PAGE" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" prefHeight="50.0" prefWidth="50.0">
-                     <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@images/double_left_30px.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <HBox.margin>
-                        <Insets top="5.0" />
-                     </HBox.margin>
-                     <tooltip>
-                        <Tooltip text="Start Page">
-                           <font>
-                              <Font size="13.0" />
-                           </font>
-                        </Tooltip>
-                     </tooltip>
-                  </JFXButton>
                   <JFXButton fx:id="PREVIOUS_PAGE" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" prefHeight="50.0" prefWidth="50.0">
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
@@ -103,26 +85,7 @@
                         </Tooltip>
                      </tooltip>
                   </JFXButton>
-                  <JFXButton fx:id="END_PAGE" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" prefHeight="50.0" prefWidth="50.0">
-                     <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@images/double_right_30px.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <HBox.margin>
-                        <Insets top="5.0" />
-                     </HBox.margin>
-                     <tooltip>
-                        <Tooltip text="End Page">
-                           <font>
-                              <Font size="13.0" />
-                           </font>
-                        </Tooltip>
-                     </tooltip>
-                  </JFXButton>
-                  <TextField fx:id="PAGE" prefHeight="40.0" prefWidth="50.0">
+                  <TextField fx:id="PAGE" prefHeight="40.0" prefWidth="50.0" text="0">
                      <HBox.margin>
                         <Insets top="10.0" />
                      </HBox.margin>
@@ -253,26 +216,6 @@
                      </tooltip>
                   </JFXButton>
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
-                  <JFXButton fx:id="COMMENT" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" prefHeight="50.0" prefWidth="50.0" visible="false">
-                     <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@images/comments_30px.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <HBox.margin>
-                        <Insets top="5.0" />
-                     </HBox.margin>
-                     <tooltip>
-                        <Tooltip text="Comment">
-                           <font>
-                              <Font size="13.0" />
-                           </font>
-                        </Tooltip>
-                     </tooltip>
-                  </JFXButton>
-                  <Separator orientation="VERTICAL" prefHeight="200.0" visible="false" />
                </children>
             </HBox>
             <HBox fx:id="DRAW_OPTIONS" layoutY="60.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" prefWidth="1270.0" spacing="10.0" style="-fx-border-color: LIGHTGRAY;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="59.0">
@@ -384,6 +327,27 @@
                         <Insets top="5.0" />
                      </HBox.margin>
                   </ListView>
+                  <Separator orientation="VERTICAL" prefHeight="200.0" />
+                  <JFXButton fx:id="STAMP_DRAG" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" prefHeight="50.0" prefWidth="50.0">
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/drag_30px.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Drag ">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </Tooltip>
+                     </tooltip>
+                     <HBox.margin>
+                        <Insets top="5.0" />
+                     </HBox.margin>
+                  </JFXButton>
+                  <Separator orientation="VERTICAL" prefHeight="200.0" />
                </children>
             </HBox>
             <HBox fx:id="NOTES_OPTIONS" layoutX="10.0" layoutY="36.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" prefWidth="1270.0" spacing="10.0" style="-fx-border-color: LIGHTGRAY;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="59.0">
@@ -429,11 +393,25 @@
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
                </children>
             </HBox>
+            <VBox fx:id="ACCOUNT_DETAILS" prefHeight="58.0" prefWidth="255.0" style="-fx-border-color: lightgray;" AnchorPane.bottomAnchor="60.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <Label fx:id="NAME" alignment="CENTER" prefHeight="28.0" prefWidth="256.0" textFill="#6e6e6e" VBox.vgrow="ALWAYS">
+                     <font>
+                        <Font name="Segoe UI Bold" size="20.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="EMAIL" alignment="CENTER" prefHeight="28.0" prefWidth="260.0" textFill="#6e6e6e">
+                     <font>
+                        <Font name="Segoe UI" size="16.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
          </children>
       </AnchorPane>
    </top>
    <center>
-      <ScrollPane fx:id="scroller" pannable="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <ScrollPane fx:id="scroller" minHeight="-Infinity" minWidth="-Infinity" pannable="true" prefHeight="531.0" prefWidth="1142.0" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets bottom="50.0" left="50.0" right="50.0" top="-1.0" />
          </BorderPane.margin>

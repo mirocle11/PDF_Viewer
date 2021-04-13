@@ -50,6 +50,8 @@ public class MultipartUtility {
         httpConn.setDoInput(true);
         httpConn.setRequestProperty("Content-Type",
                 "multipart/form-data; boundary=" + boundary);
+        httpConn.setRequestProperty("Authorization", "Bearer AktNwEPl0yEusBuxry2aVVWpPw9h7WYhuBoMDc1W");
+        httpConn.setRequestProperty("Accept", "application/json");
 
         outputStream = httpConn.getOutputStream();
         writer = new PrintWriter(new OutputStreamWriter(outputStream, charset),
@@ -58,6 +60,7 @@ public class MultipartUtility {
 
     /**
      * Adds a form field to the request
+     *
      * @param name field name
      * @param value field value
      */
@@ -119,6 +122,7 @@ public class MultipartUtility {
      * @throws IOException
      */
     public List<String> finish() throws IOException {
+
         List<String> response = new ArrayList<String>();
 
         writer.append(LINE_FEED).flush();
@@ -127,18 +131,24 @@ public class MultipartUtility {
 
         // checks server's status code first
         int status = httpConn.getResponseCode();
-        if (status == HttpURLConnection.HTTP_OK) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    httpConn.getInputStream()));
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                response.add(line);
-            }
-            reader.close();
-            httpConn.disconnect();
-        } else {
-            throw new IOException("Server returned non-OK status: " + status);
+//        if (status == HttpURLConnection.HTTP_OK) {
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
+//            String line = null;
+//            while ((line = reader.readLine()) != null) {
+//                response.add(line);
+//            }
+//            reader.close();
+//            httpConn.disconnect();
+//        } else {
+//            throw new IOException("Server returned non-OK status: " + status);
+//        }
+        BufferedReader reader = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            response.add(line);
         }
+        reader.close();
+        httpConn.disconnect();
 
         return response;
     }

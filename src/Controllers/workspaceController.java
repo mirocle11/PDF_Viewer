@@ -2,15 +2,20 @@ package Controllers;
 
 import Main.Main;
 import Model.PageObject;
+import Model.SessionModel;
 import Model.ShapeObject;
 import Service.Tools;
 import com.jfoenix.controls.JFXButton;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -18,20 +23,24 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 import java.util.ResourceBundle;
 
 public class workspaceController implements Initializable {
@@ -46,12 +55,13 @@ public class workspaceController implements Initializable {
 
     //components
     public HBox DRAW_OPTIONS, STAMP_OPTIONS, NOTES_OPTIONS;
-    public JFXButton FILE, START_PAGE, PREVIOUS_PAGE, NEXT_PAGE, END_PAGE, ROTATE_LEFT, ROTATE_RIGHT,
-            DRAW, STAMP, COMMENT, NOTES, LINE;
+    public VBox ACCOUNT_DETAILS;
+    public JFXButton FILE, PREVIOUS_PAGE, NEXT_PAGE, ROTATE_LEFT, ROTATE_RIGHT,
+            DRAW, STAMP, NOTES, LINE, STAMP_DRAG;
     public ColorPicker DRAW_COLOR, NOTES_COLOR;
     public TextField PAGE, NOTES_TXT;
     public ComboBox<String> STAMP_COLOR;
-    public Label TOTAL_PAGE;
+    public Label TOTAL_PAGE, NAME, EMAIL;
     public Canvas canvas, pane_canvas;
     public Pane pane;
     public ScrollPane scroller;
@@ -59,9 +69,17 @@ public class workspaceController implements Initializable {
     public Group scrollContent, group;
     public ListView<ImageView> STAMP_LIST;
 
+    public static Stage addDocumentStage; //modal
+    public static Stage loginStage;
+
     public ContextMenu FILE_MENU = new ContextMenu();
     public MenuItem FILE_OPEN = new MenuItem("Open");
     public MenuItem FILE_SAVE = new MenuItem("Save");
+    public MenuItem FILE_CREATE_DOC = new MenuItem("Create Doc");
+    public MenuItem FILE_LOGIN = new MenuItem("Login");
+
+    private double xOffset = 0;
+    private double yOffset = 0;
 
     public Image[] iconImages;
 
@@ -69,7 +87,8 @@ public class workspaceController implements Initializable {
     ArrayList<PageObject> pageObjects = new ArrayList<>();
     boolean issetCanvas = false;
     public int notes_indicator;
-    private final ObservableList<String> stamp_color = FXCollections.observableArrayList("Blue", "Red", "Green");
+    public static int stamp_drag_indicator = 0;
+    public static boolean login_identifier = false;
 
     //collections (2)
     List<Shape> shapeList = new ArrayList<>();
@@ -77,6 +96,7 @@ public class workspaceController implements Initializable {
     ArrayList<Shape> stampList = new ArrayList<>();
     ArrayList<double[][]> snapList = new ArrayList<>();
     public ArrayList<ShapeObject> shapeObjList = new ArrayList<>();
+    private final ObservableList<String> stamp_color = FXCollections.observableArrayList("Blue", "Red", "Green");
 
     //page
     public PageObject page;
@@ -135,7 +155,6 @@ public class workspaceController implements Initializable {
                 tools.setMode("FREE");
             }
         });
-
         NOTES.setOnAction(event -> {
             if (!NOTES_OPTIONS.isVisible()) {
                 NOTES_OPTIONS.setVisible(true);
@@ -154,6 +173,8 @@ public class workspaceController implements Initializable {
 
         FILE_MENU.getItems().add(FILE_OPEN);
         FILE_MENU.getItems().add(FILE_SAVE);
+        FILE_MENU.getItems().add(FILE_CREATE_DOC);
+        FILE_MENU.getItems().add(FILE_LOGIN);
 
         FILE.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
@@ -161,11 +182,20 @@ public class workspaceController implements Initializable {
             } else {
                 FILE_MENU.hide();
             }
+
         });
 
         FILE_OPEN.setOnAction(event -> {
-            tools.open();
+            try {
+                tools.open();
+                loadSaveButton();
+            } catch (IOException exception) {
+//                exception.printStackTrace();
+            }
         });
+
+        FILE_SAVE.setDisable(true);
+//        loadSaveButton();
 
         FILE_SAVE.setOnAction(event -> {
             tools.save();
@@ -184,6 +214,97 @@ public class workspaceController implements Initializable {
                 createIconList(STAMP_COLOR.getSelectionModel().getSelectedItem());
             }
         });
+
+        STAMP_DRAG.setOnAction(event -> {
+            if (stamp_drag_indicator == 0) {
+                stamp_drag_indicator = 1;
+            } else {
+                stamp_drag_indicator = 1;
+            }
+        });
+
+        STAMP_LIST.setOnMouseClicked(event -> {
+            tools.setMode("STAMP");
+        });
+
+        FILE_CREATE_DOC.setOnAction(event -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(Main.class.getResource("/Views/addDocument.fxml"));
+                AnchorPane pane = loader.load();
+
+                //draggable pop up
+                pane.setOnMousePressed(event1 -> {
+                    xOffset = event1.getSceneX();
+                    yOffset = event1.getSceneY();
+                });
+
+                pane.setOnMouseDragged(event1 -> {
+                    addDocumentStage.setX(event1.getScreenX() - xOffset);
+                    addDocumentStage.setY(event1.getScreenY() - yOffset);
+                });
+
+                Scene scene = new Scene(pane);
+                scene.setFill(Color.TRANSPARENT);
+                addDocumentStage = new Stage();
+                addDocumentStage.setScene(scene);
+                addDocumentStage.initStyle(StageStyle.UNDECORATED);
+                addDocumentStage.initModality(Modality.APPLICATION_MODAL);
+                addDocumentStage.initStyle(StageStyle.TRANSPARENT);
+
+                addDocumentStage.showAndWait();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        FILE_LOGIN.setOnAction(event -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(Main.class.getResource("/Views/loginForm.fxml"));
+                AnchorPane pane = loader.load();
+
+                //draggable pop up
+                pane.setOnMousePressed(event1 -> {
+                    xOffset = event1.getSceneX();
+                    yOffset = event1.getSceneY();
+                });
+
+                pane.setOnMouseDragged(event1 -> {
+                    loginStage.setX(event1.getScreenX() - xOffset);
+                    loginStage.setY(event1.getScreenY() - yOffset);
+                });
+
+                Scene scene = new Scene(pane);
+                scene.setFill(Color.TRANSPARENT);
+                loginStage = new Stage();
+                loginStage.setScene(scene);
+                loginStage.initStyle(StageStyle.UNDECORATED);
+                loginStage.initModality(Modality.APPLICATION_MODAL);
+                loginStage.initStyle(StageStyle.TRANSPARENT);
+                loginStage.setOnHidden(new EventHandler<WindowEvent>() {
+                    @Override
+                    public void handle(WindowEvent event) {
+                        if (login_identifier = true) {
+                            setAccountDetails(loginController.name, loginController.email);
+                        }
+                    }
+                });
+                loginStage.showAndWait();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void loadSaveButton() {
+        new Thread(()->{try {
+            Thread.sleep(35000);} catch (InterruptedException ex) { ex.printStackTrace();}
+            Platform.runLater(() -> FILE_SAVE.setDisable(false));
+        }).start();
+    }
+
+    public void setAccountDetails(String name, String email) {
+        NAME.setText(name);
+        EMAIL.setText(email);
     }
 
     public void createIconList(String color) {
@@ -199,7 +320,7 @@ public class workspaceController implements Initializable {
                 String icon_url = "/Views/stamper_icons/";
 
                 for (int i = 0; i < iconNames.length; i++) {
-                    InputStream inputStream = workspaceController.class.getResourceAsStream(icon_url + iconNames[i]);
+                    InputStream inputStream = getClass().getResourceAsStream(icon_url + iconNames[i]);
                     Image icon = new Image(inputStream);
                     iconImages[i] = icon;
                     STAMP_LIST.getItems().add(new ImageView(icon));
@@ -215,7 +336,7 @@ public class workspaceController implements Initializable {
                 String icon_url = "/Views/stamper_icons/";
 
                 for (int i = 0; i < iconNames.length; i++) {
-                    InputStream inputStream = workspaceController.class.getResourceAsStream(icon_url + iconNames[i]);
+                    InputStream inputStream = getClass().getResourceAsStream(icon_url + iconNames[i]);
                     Image icon = new Image(inputStream);
                     iconImages[i] = icon;
                     STAMP_LIST.getItems().add(new ImageView(icon));
@@ -231,7 +352,7 @@ public class workspaceController implements Initializable {
                 String icon_url = "/Views/stamper_icons/";
 
                 for (int i = 0; i < iconNames.length; i++) {
-                    InputStream inputStream = workspaceController.class.getResourceAsStream(icon_url + iconNames[i]);
+                    InputStream inputStream = getClass().getResourceAsStream(icon_url + iconNames[i]);
                     Image icon = new Image(inputStream);
                     iconImages[i] = icon;
                     STAMP_LIST.getItems().add(new ImageView(icon));
@@ -405,6 +526,14 @@ public class workspaceController implements Initializable {
         } else {
             scroller.setPannable(true);
         }
+    }
+
+    static void closeDocumentStage() {
+        addDocumentStage.close();
+    }
+
+    static void closeLoginStage() {
+        loginStage.close();
     }
 
 }

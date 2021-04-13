@@ -46,13 +46,14 @@ public class Length implements IMeasurement {
         this.page = tools.page;
         this.snapList = tools.page.getSnapList();
 
-        this.tools.pane.setOnMouseClicked(event -> {
+        this.pane.setOnMouseClicked(event -> {
             handleClick(event);
         });
 
-        this.tools.pane.setOnMouseMoved(event -> {
+        this.pane.setOnMouseMoved(event -> {
             handleMouseMove(event);
         });
+
     }
 
     @Override
@@ -77,7 +78,7 @@ public class Length implements IMeasurement {
             line.setStrokeWidth(8 / group.getScaleY());
             Point2D end = new Point2D(line.getEndX(), line.getEndY());
             pointList.add(end);
-            drawBox(line.getEndX(), line.getEndY(), pane, group.getScaleX());
+//            drawBox(line.getEndX(), line.getEndY(), pane, group.getScaleX());
             isNew = false;
             snapX = snapY = -1;
         } else {
@@ -89,12 +90,13 @@ public class Length implements IMeasurement {
             pointList.add(end);
 
             DrawService.drawLine(line, pane, group.getScaleX());
-            drawBox(line.getEndX(), line.getEndY(), pane, group.getScaleX());
+//            drawBox(line.getEndX(), line.getEndY(), pane, group.getScaleX());
 //            DrawService.drawLabel(line, pane, page.getScale(), group.getScaleX());
 
-            line.setStartX(line.getEndX());
-            line.setStartY(line.getEndY());
-            snapX = snapY = -1;
+//            line.setStartX(line.getEndX());
+//            line.setStartY(line.getEndY());
+//            snapX = snapY = -1;
+            handleFinish();
         }
     }
 
@@ -172,7 +174,7 @@ public class Length implements IMeasurement {
         }
 
         shapeObj.setPointList(pointList);
-        shapeObj.setType("FREE");
+        shapeObj.setType("LENGTH");
         shapeObj.setTools(tools);
 
         page.getShapeList().add(shapeObj);
@@ -196,23 +198,23 @@ public class Length implements IMeasurement {
             contextMenu = new ContextMenu();
             contextMenu.hide();
 
-            MenuItem removeLength = new MenuItem("Remove Length");
+            MenuItem removeLength = new MenuItem("Remove Line");
             removeLength.setOnAction(event1 -> {
                 tools.page.shapeObjList.remove(this);
                 tools.updateWindow();
             });
 
-            MenuItem finish = new MenuItem("Complete Length");
-            finish.setOnAction(event1 -> {
-                if (pointList.size() >= 2) {
-                    handleFinish();
-                }
-                tools.updateWindow();
-            });
+//            MenuItem finish = new MenuItem("Complete Line");
+//            finish.setOnAction(event1 -> {
+//                if (pointList.size() >= 2) {
+////                    handleFinish();
+//                }
+//                tools.updateWindow();
+//            });
 
-            if (pointList.size() >= 2) {
-                contextMenu.getItems().add(finish);
-            }
+//            if (pointList.size() >= 2) {
+//                contextMenu.getItems().add(finish);
+//            }
             if (pointList.size() >= 1) {
                 contextMenu.getItems().add(removeLength);
             }
@@ -220,31 +222,4 @@ public class Length implements IMeasurement {
         }
     }
 
-    public void drawBox(double x, double y, Pane pane, double scale) {
-        box.add(new Rectangle());
-        Rectangle r = (Rectangle) box.get(0);
-        r.setX(x - 5 / scale);
-        r.setY(y - 5 / scale);
-        r.setWidth(10 / scale);
-        r.setHeight(10 / scale);
-        r.setStroke(Color.GREEN);
-        r.setOpacity(.7);
-        r.setStrokeWidth(4 / scale);
-        r.setFill(Color.TRANSPARENT);
-        r.setOnMouseEntered(event -> {
-            r.setStroke(Color.RED);
-        });
-        r.setOnMouseExited(event -> {
-            r.setStroke(Color.GREEN);
-        });
-        r.setOnMouseReleased(event -> {
-            if (!Tools.canDraw || event.getButton() == MouseButton.SECONDARY) {
-                return;
-            }
-            this.rect = r;
-            handleFinish();
-        });
-        pane.getChildren().add(r);
-        box.clear();
-    }
 }

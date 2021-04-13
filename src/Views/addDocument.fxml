@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="643.0" prefWidth="983.0" style="-fx-background-color: TRANSPARENT;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.addDocumentController">
+   <children>
+      <AnchorPane layoutX="91.0" layoutY="30.0" style="-fx-background-radius: 30px; -fx-background-color: WHITE;" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0">
+         <effect>
+            <DropShadow />
+         </effect>
+         <children>
+            <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" prefHeight="37.0" prefWidth="164.0" text="Create Document" textFill="#737373">
+               <font>
+                  <Font name="Segoe UI Bold" size="15.0" />
+               </font>
+            </Label>
+            <Separator layoutX="14.0" layoutY="44.0" prefHeight="15.0" prefWidth="889.0" />
+            <JFXButton fx:id="CLOSE" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" layoutX="857.0" layoutY="7.0" prefHeight="40.0" prefWidth="40.0">
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/multiply_30px.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Notes">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Tooltip>
+               </tooltip>
+            </JFXButton>
+            <TextArea fx:id="TEXT_AREA" layoutX="36.0" layoutY="85.0" prefHeight="441.0" prefWidth="852.0" promptText="Notes goes here.." wrapText="true">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </TextArea>
+            <JFXButton fx:id="SAVE_NOTES" alignment="CENTER" contentDisplay="CENTER" layoutX="757.0" layoutY="536.0" prefHeight="40.0" prefWidth="131.0" style="-fx-background-color: lightgray; -fx-background-radius: 20px;" text="Save Doc" textFill="#737373">
+               <tooltip>
+                  <Tooltip text="Notes">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Tooltip>
+               </tooltip>
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+               <effect>
+                  <DropShadow />
+               </effect>
+            </JFXButton>
+         </children></AnchorPane>
+   </children>
+</AnchorPane>

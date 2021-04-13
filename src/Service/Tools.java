@@ -1,28 +1,27 @@
 package Service;
 import Controllers.workspaceController;
 import Model.*;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Font;
-import sun.misc.IOUtils;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import javax.swing.*;
+import java.awt.event.ActionListener;
+import java.io.*;
 import java.util.*;
 
 public class Tools {
@@ -50,10 +49,12 @@ public class Tools {
     ArrayList<PageObject> pageObjects = new ArrayList<>();
     ArrayList<double[][]> snapList = new ArrayList<>();
     public ArrayList<ShapeObject> shapeObjList = new ArrayList<>();
+    public static String job_id = "";
 
     // indicator
     public int notes_id = 0;
     public int stamp_id = 0;
+    public int stamp_drag = 0;
 
     double total;
 
@@ -114,47 +115,16 @@ public class Tools {
         this.pane.getChildren().add(circle);
     }
 
-    public void open() {
-//        String dataDir = "C:/Users/User/Documents/a1.pdf";
-//
-//        BufferedImage readImage = null;
-//        String path = dataDir + "Base64 to Image.png";
-//        try {
-//            readImage = ImageIO.read(new File(path));
-//            int h = readImage.getHeight();
-//            int w = readImage.getWidth();
-//
-//            com.aspose.pdf.Document doc = new com.aspose.pdf.Document();
-//            com.aspose.pdf.Page page = doc.getPages().add();
-//            com.aspose.pdf.Image image = new com.aspose.pdf.Image();
-//            image.setFile(path);
-//            page.getPageInfo().setHeight(h);
-//            page.getPageInfo().setWidth(w);
-//            page.getPageInfo().getMargin().setBottom(0);
-//            page.getPageInfo().getMargin().setTop(0);
-//            page.getPageInfo().getMargin().setRight(0);
-//            page.getPageInfo().getMargin().setLeft(0);
-//            page.getParagraphs().add(image);
-//            doc.save(dataDir + "Base64-to-PDF.pdf");
-//        } catch (Exception e) {
-//            readImage = null;
+    public void open() throws IOException {
+//        URL url = new URL("https://drafty-public.s3.ap-southeast-1.amazonaws.com/documents/jobs/00001-House+1/2604-AFH_ALEX+HILLS_vc1.0.2+18+Apr+20.pdf");
+//        try (InputStream in = url.openStream()) {
+//            Files.copy(in, Paths.get("C:/Users/User/Documents/someFile.pdf"), StandardCopyOption.REPLACE_EXISTING);
+//        } catch (IOException e) {
+//            // handle exception
 //        }
-
-//        File file = new File("C:/Users/User/Documents/a1.pdf");
-
-//        try (FileOutputStream fos = new FileOutputStream(file);) {
-//            // To be short I use a corrupted PDF string, so make sure to use a valid one if you want to preview the PDF file]
-//            String b64 = "JVBERi0xLjMNCiXi48/TDQoNCjEgMCBvYmoNCjw8DQovVHlwZSAvQ2F0YWxvZw0KL091dGxpbmVzIDIgMCBSDQovUGFnZXMgMyAwIFINCj4+DQplbmRvYmoNCg0KMiAwIG9iag0KPDwNCi9UeXBlIC9PdXRsaW5lcw0KL0NvdW50IDANCj4+DQplbmRvYmoNCg0KMyAwIG9iag0KPDwNCi9UeXBlIC9QYWdlcw0KL0NvdW50IDINCi9LaWRzIFsgNCAwIFIgNiAwIFIgXSANCj4+DQplbmRvYmoNCg0KNCAwIG9iag0KPDwNCi9UeXBlIC9QYWdlDQovUGFyZW50IDMgMCBSDQovUmVzb3VyY2VzIDw8DQovRm9udCA8PA0KL0YxIDkgMCBSIA0KPj4NCi9Qcm9jU2V0IDggMCBSDQo+Pg0KL01lZGlhQm94IFswIDAgNjEyLjAwMDAgNzkyLjAwMDBdDQovQ29udGVudHMgNSAwIFINCj4+DQplbmRvYmoNCg0KNSAwIG9iag0KPDwgL0xlbmd0aCAxMDc0ID4+DQpzdHJlYW0NCjIgSg0KQlQNCjAgMCAwIHJnDQovRjEgMDAyNyBUZg0KNTcuMzc1MCA3MjIuMjgwMCBUZA0KKCBBIFNpbXBsZSBQREYgRmlsZSApIFRqDQpFVA0KQlQNCi9GMSAwMDEwIFRmDQo2OS4yNTAwIDY4OC42MDgwIFRkDQooIFRoaXMgaXMgYSBzbWFsbCBkZW1vbnN0cmF0aW9uIC5wZGYgZmlsZSAtICkgVGoNCkVUDQpCVA0KL0YxIDAwMTAgVGYNCjY5LjI1MDAgNjY0LjcwNDAgVGQNCigganVzdCBmb3IgdXNlIGluIHRoZSBWaXJ0dWFsIE1lY2hhbmljcyB0dXRvcmlhbHMuIE1vcmUgdGV4dC4gQW5kIG1vcmUgKSBUag0KRVQNCkJUDQovRjEgMDAxMCBUZg0KNjkuMjUwMCA2NTIuNzUyMCBUZA0KKCB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiApIFRqDQpFVA0KQlQNCi9GMSAwMDEwIFRmDQo2OS4yNTAwIDYyOC44NDgwIFRkDQooIEFuZCBtb3JlIHRleHQuIEFuZCBtb3JlIHRleHQuIEFuZCBtb3JlIHRleHQuIEFuZCBtb3JlIHRleHQuIEFuZCBtb3JlICkgVGoNCkVUDQpCVA0KL0YxIDAwMTAgVGYNCjY5LjI1MDAgNjE2Ljg5NjAgVGQNCiggdGV4dC4gQW5kIG1vcmUgdGV4dC4gQm9yaW5nLCB6enp6ei4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gQW5kICkgVGoNCkVUDQpCVA0KL0YxIDAwMTAgVGYNCjY5LjI1MDAgNjA0Ljk0NDAgVGQNCiggbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiApIFRqDQpFVA0KQlQNCi9GMSAwMDEwIFRmDQo2OS4yNTAwIDU5Mi45OTIwIFRkDQooIEFuZCBtb3JlIHRleHQuIEFuZCBtb3JlIHRleHQuICkgVGoNCkVUDQpCVA0KL0YxIDAwMTAgVGYNCjY5LjI1MDAgNTY5LjA4ODAgVGQNCiggQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgKSBUag0KRVQNCkJUDQovRjEgMDAxMCBUZg0KNjkuMjUwMCA1NTcuMTM2MCBUZA0KKCB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBFdmVuIG1vcmUuIENvbnRpbnVlZCBvbiBwYWdlIDIgLi4uKSBUag0KRVQNCmVuZHN0cmVhbQ0KZW5kb2JqDQoNCjYgMCBvYmoNCjw8DQovVHlwZSAvUGFnZQ0KL1BhcmVudCAzIDAgUg0KL1Jlc291cmNlcyA8PA0KL0ZvbnQgPDwNCi9GMSA5IDAgUiANCj4+DQovUHJvY1NldCA4IDAgUg0KPj4NCi9NZWRpYUJveCBbMCAwIDYxMi4wMDAwIDc5Mi4wMDAwXQ0KL0NvbnRlbnRzIDcgMCBSDQo+Pg0KZW5kb2JqDQoNCjcgMCBvYmoNCjw8IC9MZW5ndGggNjc2ID4+DQpzdHJlYW0NCjIgSg0KQlQNCjAgMCAwIHJnDQovRjEgMDAyNyBUZg0KNTcuMzc1MCA3MjIuMjgwMCBUZA0KKCBTaW1wbGUgUERGIEZpbGUgMiApIFRqDQpFVA0KQlQNCi9GMSAwMDEwIFRmDQo2OS4yNTAwIDY4OC42MDgwIFRkDQooIC4uLmNvbnRpbnVlZCBmcm9tIHBhZ2UgMS4gWWV0IG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gKSBUag0KRVQNCkJUDQovRjEgMDAxMCBUZg0KNjkuMjUwMCA2NzYuNjU2MCBUZA0KKCBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSApIFRqDQpFVA0KQlQNCi9GMSAwMDEwIFRmDQo2OS4yNTAwIDY2NC43MDQwIFRkDQooIHRleHQuIE9oLCBob3cgYm9yaW5nIHR5cGluZyB0aGlzIHN0dWZmLiBCdXQgbm90IGFzIGJvcmluZyBhcyB3YXRjaGluZyApIFRqDQpFVA0KQlQNCi9GMSAwMDEwIFRmDQo2OS4yNTAwIDY1Mi43NTIwIFRkDQooIHBhaW50IGRyeS4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gKSBUag0KRVQNCkJUDQovRjEgMDAxMCBUZg0KNjkuMjUwMCA2NDAuODAwMCBUZA0KKCBCb3JpbmcuICBNb3JlLCBhIGxpdHRsZSBtb3JlIHRleHQuIFRoZSBlbmQsIGFuZCBqdXN0IGFzIHdlbGwuICkgVGoNCkVUDQplbmRzdHJlYW0NCmVuZG9iag0KDQo4IDAgb2JqDQpbL1BERiAvVGV4dF0NCmVuZG9iag0KDQo5IDAgb2JqDQo8PA0KL1R5cGUgL0ZvbnQNCi9TdWJ0eXBlIC9UeXBlMQ0KL05hbWUgL0YxDQovQmFzZUZvbnQgL0hlbHZldGljYQ0KL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcNCj4+DQplbmRvYmoNCg0KMTAgMCBvYmoNCjw8DQovQ3JlYXRvciAoUmF2ZSBcKGh0dHA6Ly93d3cubmV2cm9uYS5jb20vcmF2ZVwpKQ0KL1Byb2R1Y2VyIChOZXZyb25hIERlc2lnbnMpDQovQ3JlYXRpb25EYXRlIChEOjIwMDYwMzAxMDcyODI2KQ0KPj4NCmVuZG9iag0KDQp4cmVmDQowIDExDQowMDAwMDAwMDAwIDY1NTM1IGYNCjAwMDAwMDAwMTkgMDAwMDAgbg0KMDAwMDAwMDA5MyAwMDAwMCBuDQowMDAwMDAwMTQ3IDAwMDAwIG4NCjAwMDAwMDAyMjIgMDAwMDAgbg0KMDAwMDAwMDM5MCAwMDAwMCBuDQowMDAwMDAxNTIyIDAwMDAwIG4NCjAwMDAwMDE2OTAgMDAwMDAgbg0KMDAwMDAwMjQyMyAwMDAwMCBuDQowMDAwMDAyNDU2IDAwMDAwIG4NCjAwMDAwMDI1NzQgMDAwMDAgbg0KDQp0cmFpbGVyDQo8PA0KL1NpemUgMTENCi9Sb290IDEgMCBSDQovSW5mbyAxMCAwIFINCj4+DQoNCnN0YXJ0eHJlZg0KMjcxNA0KJSVFT0YNCg==";
-//            byte[] decoder = Base64.getDecoder().decode(b64);
-//
-//            fos.write(decoder);
-//            System.out.println("PDF File Saved");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
 
         try {
+//            File pdf = new File("C:/Users/User/Documents/someFile.pdf");
             File pdf = FileService.open();
             PdfToImageService service = new PdfToImageService(pdf);
             service.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -175,6 +145,16 @@ public class Tools {
                         lbl.setLayoutX(10);
                         lbl.setLayoutY(-5);
                         pane.getChildren().add(lbl);
+
+                        try {
+                            job_id = JOptionPane.showInputDialog("Enter Job Id", "");
+                        } catch (Exception e) {
+                            JOptionPane.showMessageDialog(null, "Please enter a valid number.",
+                                    "Invalid job id value", JOptionPane.ERROR_MESSAGE);
+                        }
+
+                        window.PAGE.setText(String.valueOf(pageNumber + 1));
+                        window.TOTAL_PAGE.setText("of " + pageObjects.size());
                     }
                 }
             });
@@ -190,6 +170,147 @@ public class Tools {
     }
 
     public void setMode(String mode) {
+        EventHandler<MouseEvent> onMouseClickedEventHandlerStamp = event -> {
+            if (event.getButton() == MouseButton.PRIMARY && mode.equals("STAMP")) {
+                ImageView stamp_img = new ImageView();
+                StampObject stampObject = new StampObject();
+
+                int selected_icon = window.STAMP_LIST.getSelectionModel().getSelectedIndex();
+
+                switch (window.STAMP_COLOR.getSelectionModel().getSelectedItem()) {
+                    case "Blue":
+                        switch (selected_icon) {
+                            case 0:
+                                stamp_img.setImage(new Image(getClass().getResourceAsStream("/Views/stamper_icons/blue_right1.png")));
+                                stampObject.setImagePath("/Views/stamper_icons/blue_right1.png");
+                                break;
+                            case 1:
+                                stamp_img.setImage(new Image(getClass().getResourceAsStream("/Views/stamper_icons/blue_down1.png")));
+                                stampObject.setImagePath("/Views/stamper_icons/blue_down1.png");
+                                break;
+                            case 2:
+                                stamp_img.setImage(new Image(getClass().getResourceAsStream("/Views/stamper_icons/blue_left1.png")));
+                                stampObject.setImagePath("/Views/stamper_icons/blue_left1.png");
+                                break;
+                            case 3:
+                                stamp_img.setImage(new Image(getClass().getResourceAsStream("/Views/stamper_icons/blue_up1.png")));
+                                stampObject.setImagePath("/Views/stamper_icons/blue_up1.png");
+                                break;
+                        }
+                        break;
+                    case "Red":
+                        switch (selected_icon) {
+                            case 0:
+                                stamp_img.setImage(new Image(getClass().getResourceAsStream("/Views/stamper_icons/red_right1.png")));
+                                stampObject.setImagePath("/Views/stamper_icons/red_right1.png");
+                                break;
+                            case 1:
+                                stamp_img.setImage(new Image(getClass().getResourceAsStream("/Views/stamper_icons/red_down1.png")));
+                                stampObject.setImagePath("/Views/stamper_icons/red_down1.png");
+                                break;
+                            case 2:
+                                stamp_img.setImage(new Image(getClass().getResourceAsStream("/Views/stamper_icons/red_left1.png")));
+                                stampObject.setImagePath("/Views/stamper_icons/red_left1.png");
+                                break;
+                            case 3:
+                                stamp_img.setImage(new Image(getClass().getResourceAsStream("/Views/stamper_icons/red_up1.png")));
+                                stampObject.setImagePath("/Views/stamper_icons/red_up1.png");
+                                break;
+                        }
+                        break;
+                    case "Green":
+                        switch (selected_icon) {
+                            case 0:
+                                stamp_img.setImage(new Image(getClass().getResourceAsStream("/Views/stamper_icons/green_right1.png")));
+                                stampObject.setImagePath("/Views/stamper_icons/green_right1.png");
+                                break;
+                            case 1:
+                                stamp_img.setImage(new Image(getClass().getResourceAsStream("/Views/stamper_icons/green_down1.png")));
+                                stampObject.setImagePath("/Views/stamper_icons/green_down1.png");
+                                break;
+                            case 2:
+                                stamp_img.setImage(new Image(getClass().getResourceAsStream("/Views/stamper_icons/green_left1.png")));
+                                stampObject.setImagePath("/Views/stamper_icons/green_left1.png");
+                                break;
+                            case 3:
+                                stamp_img.setImage(new Image(getClass().getResourceAsStream("/Views/stamper_icons/green_up1.png")));
+                                stampObject.setImagePath("/Views/stamper_icons/green_up1.png");
+                                break;
+                        }
+                        break;
+                }
+
+                Label stamp = new Label();
+                stamp.setLayoutX(event.getX());
+                stamp.setLayoutY(event.getY());
+                stamp.setGraphic(stamp_img);
+
+                pane.getChildren().add(stamp);
+
+                System.out.println("stamp path: " + stampObject.getImagePath());
+                stampObject.setStamp(stamp);
+                stamp_id++;
+                stampObject.setStamp_no(stamp_id);
+
+                stamp.setOnMouseClicked(event1 -> {
+                    if (event1.getButton() == MouseButton.SECONDARY) {
+                        stampMenu = new ContextMenu();
+                        stampMenu.hide();
+
+                        MenuItem removeStamp = new MenuItem("Remove Stamp");
+                        removeStamp.setOnAction(event2 -> {
+                            stamp.setVisible(false);
+                        });
+                        stampMenu.getItems().add(removeStamp);
+                        stampMenu.show(stamp, event1.getScreenX(), event1.getScreenY());
+                    }
+                });
+                MouseGestures mg = new MouseGestures();
+                mg.makeDraggable(stamp);
+
+                page.getStampObjectList().add(stampObject);
+            }
+        };
+        EventHandler<MouseEvent> onMouseClickedEventHandlerNotes = event -> {
+            if (event.getButton() == MouseButton.PRIMARY && mode.equals("NOTES")) {
+                Label notes = new Label();
+                notes.setText(window.NOTES_TXT.getText());
+                notes.setTextFill(window.NOTES_COLOR.getValue());
+                notes.setFont(new Font("Segoe UI", 32));
+                notes.setWrapText(true);
+                notes.setMaxWidth(550);
+                notes.setStyle("-fx-border-color: #ff0000;");
+                notes.setAlignment(Pos.CENTER);
+                notes.setLayoutX(event.getX() - 50);
+                notes.setLayoutY(event.getY() - 40);
+
+                pane.getChildren().add(notes);
+
+                NotesObject notesObject = new NotesObject();
+                notesObject.setNotes(notes);
+                notesObject.setColor(window.NOTES_COLOR.getValue());
+                notesObject.setNotesNo(notes_id++);
+
+                notes.setOnMouseClicked(event1 -> {
+                    if (event1.getButton() == MouseButton.SECONDARY) {
+                        stampMenu = new ContextMenu();
+                        stampMenu.hide();
+
+                        MenuItem removeStamp = new MenuItem("Remove Note");
+                        removeStamp.setOnAction(event2 -> {
+                            notes.setVisible(false);
+                        });
+                        stampMenu.getItems().add(removeStamp);
+                        stampMenu.show(notes, event1.getScreenX(), event1.getScreenY());
+                    }
+                });
+                MouseGestures mg = new MouseGestures();
+                mg.makeDraggable(notes);
+
+                page.getNotesObjectList().add(notesObject);
+            }
+        };
+
         switch (mode) {
             case "FREE":
                 this.canDraw = false;
@@ -220,148 +341,27 @@ public class Tools {
                 break;
             case "LENGTH":
                 this.canDraw = true;
+                this.pane.setOnMouseReleased(event -> {
+                    //do nothing
+                });
                 pane_canvas.setVisible(false);
                 Length length = new Length(this);
                 break;
             case "NOTES":
                 this.canDraw = false;
                 pane_canvas.setVisible(false);
-                pane.setOnMouseClicked(event -> {
-                    if (event.getButton() == MouseButton.PRIMARY) {
-                        Label notes = new Label();
-                        notes.setText(window.NOTES_TXT.getText());
-                        notes.setTextFill(window.NOTES_COLOR.getValue());
-                        notes.setFont(new Font("Segoe UI", 32));
-                        notes.setWrapText(true);
-                        notes.setMaxWidth(550);
-                        notes.setStyle("-fx-border-color: #ff0000;");
-                        notes.setAlignment(Pos.CENTER);
-                        notes.setLayoutX(event.getX() - 50);
-                        notes.setLayoutY(event.getY() - 40);
+                pane.setOnMouseReleased(onMouseClickedEventHandlerNotes);
 
-                        pane.getChildren().add(notes);
-
-                        NotesObject notesObject = new NotesObject();
-                        notesObject.setNotes(notes);
-                        notesObject.setColor(window.NOTES_COLOR.getValue());
-                        notesObject.setNotesNo(notes_id++);
-
-                        notes.setOnMouseClicked(event1 -> {
-                            if (event1.getButton() == MouseButton.SECONDARY) {
-                                stampMenu = new ContextMenu();
-                                stampMenu.hide();
-
-                                MenuItem removeStamp = new MenuItem("Remove Note");
-                                removeStamp.setOnAction(event2 -> {
-                                    notes.setVisible(false);
-                                });
-                                stampMenu.getItems().add(removeStamp);
-                                stampMenu.show(notes, event1.getScreenX(), event1.getScreenY());
-                            }
-                        });
-                        page.getNotesObjectList().add(notesObject);
-                    }
-                });
                 break;
             case "STAMP":
                 this.canDraw = false;
                 pane_canvas.setVisible(false);
-                pane.setOnMouseClicked(event -> {
-                    if (event.getButton() == MouseButton.PRIMARY) {
-                        ImageView stamp_img = new ImageView();
-                        StampObject stampObject = new StampObject();
-
-                        int selected_icon = window.STAMP_LIST.getSelectionModel().getSelectedIndex();
-
-                        if (window.STAMP_COLOR.getSelectionModel().getSelectedItem().equals("Blue")) {
-                            switch (selected_icon) {
-                                case 0:
-                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/blue_right.png")));
-                                    stampObject.setImagePath("../Views/stamper_icons/blue_right.png");
-                                    break;
-                                case 1:
-                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/blue_down.png")));
-                                    stampObject.setImagePath("../Views/stamper_icons/blue_down.png");
-                                    break;
-                                case 2:
-                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/blue_left.png")));
-                                    stampObject.setImagePath("../Views/stamper_icons/blue_left.png");
-                                    break;
-                                case 3:
-                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/blue_up.png")));
-                                    stampObject.setImagePath("../Views/stamper_icons/blue_up.png");
-                                    break;
-                            }
-                        }
-                        else if (window.STAMP_COLOR.getSelectionModel().getSelectedItem().equals("Red")) {
-                            switch (selected_icon) {
-                                case 0:
-                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/red_right.png")));
-                                    stampObject.setImagePath("../Views/stamper_icons/red_right.png");
-                                    break;
-                                case 1:
-                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/red_down.png")));
-                                    stampObject.setImagePath("../Views/stamper_icons/red_down.png");
-                                    break;
-                                case 2:
-                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/red_left.png")));
-                                    stampObject.setImagePath("../Views/stamper_icons/red_left.png");
-                                    break;
-                                case 3:
-                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/red_up.png")));
-                                    stampObject.setImagePath("../Views/stamper_icons/red_up.png");
-                                    break;
-                            }
-                        }
-                        else if (window.STAMP_COLOR.getSelectionModel().getSelectedItem().equals("Green")) {
-                            switch (selected_icon) {
-                                case 0:
-                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/green_right.png")));
-                                    stampObject.setImagePath("../Views/stamper_icons/green_right.png");
-                                    break;
-                                case 1:
-                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/green_down.png")));
-                                    stampObject.setImagePath("../Views/stamper_icons/green_down.png");
-                                    break;
-                                case 2:
-                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/green_left.png")));
-                                    stampObject.setImagePath("../Views/stamper_icons/green_left.png");
-                                    break;
-                                case 3:
-                                    stamp_img.setImage(new Image(getClass().getResourceAsStream("../Views/stamper_icons/green_up.png")));
-                                    stampObject.setImagePath("../Views/stamper_icons/green_up.png");
-                                    break;
-                            }
-                        }
-
-                        Label stamp = new Label();
-                        stamp.setLayoutX(event.getX());
-                        stamp.setLayoutY(event.getY());
-                        stamp.setGraphic(stamp_img);
-
-                        pane.getChildren().add(stamp);
-
-                        System.out.println("stamp path: " + stampObject.getImagePath());
-                        stampObject.setStamp(stamp);
-
-                        stamp.setOnMouseClicked(event1 -> {
-                            if (event1.getButton() == MouseButton.SECONDARY) {
-                                stampMenu = new ContextMenu();
-                                stampMenu.hide();
-
-                                MenuItem removeStamp = new MenuItem("Remove Stamp");
-                                removeStamp.setOnAction(event2 -> {
-                                    stamp.setVisible(false);
-                                });
-                                stampMenu.getItems().add(removeStamp);
-                                stampMenu.show(stamp, event1.getScreenX(), event1.getScreenY());
-                            }
-                        });
-                        page.getStampObjectList().add(stampObject);
-                    }
-                });
+                pane.setOnMouseReleased(onMouseClickedEventHandlerStamp);
                 break;
             case "FREE_FORM":
+                this.pane.setOnMouseReleased(event -> {
+                    //do nothing
+                });
                 pane_canvas.setVisible(true);
                 GraphicsContext g = pane_canvas.getGraphicsContext2D();
                 ArrayList<Double> points = new ArrayList<>();
@@ -395,7 +395,7 @@ public class Tools {
                     }
                 });
 
-                pane_canvas.setOnMouseReleased(event -> {
+                pane_canvas.setOnMouseClicked(event -> {
                     if (event.getButton() == MouseButton.PRIMARY) {
                         double size = 7;
                         double x = event.getX() - size / 2;
@@ -431,6 +431,12 @@ public class Tools {
                                 });
                                 stampMenu.getItems().add(removeLine);
                                 stampMenu.show(polyline, event1.getScreenX(), event1.getScreenY());
+                            }
+                        });
+
+                        pane_canvas.setOnMouseReleased(event1 -> {
+                            if (event.getButton().equals(MouseButton.PRIMARY)) {
+                                setMode("FREE");
                             }
                         });
                     }
@@ -479,6 +485,8 @@ public class Tools {
     public void nextPage() {
         if (pageNumber < pageObjects.size() - 1) {
             pageNumber++;
+            window.PAGE.setText(String.valueOf(pageNumber + 1));
+            window.TOTAL_PAGE.setText("of " + pageObjects.size());
             setPageElements();
             setMode("FREE");
 
@@ -495,6 +503,8 @@ public class Tools {
     public void previousPage() {
         if (pageNumber > 0) {
             pageNumber--;
+            window.PAGE.setText(String.valueOf(pageNumber + 1));
+            window.TOTAL_PAGE.setText("of " + pageObjects.size());
             setPageElements();
             setMode("FREE");
 
@@ -539,7 +549,7 @@ public class Tools {
                         });
                         lbl.setTextFill(sp1.getColor());
                         lbl.setOpacity(.7);
-                        pane.getChildren().add(lbl);
+//                        pane.getChildren().add(lbl);
                         total = total + sp1.getLength();
                     }
                 }
@@ -547,13 +557,13 @@ public class Tools {
                 total = 0.0;
             }
             pane.getChildren().addAll(sp1.getLineList());
-            pane.getChildren().addAll(sp1.getBoxList());
+//            pane.getChildren().addAll(sp1.getBoxList());
         }
 
         for (PolylineObject polylineObject : page.getPolyLineObjectList()) {
             pane.getChildren().addAll(polylineObject.getPolyline());
         }
-//
+
         for (StampObject stampObject : page.getStampObjectList()) {
             pane.getChildren().addAll(stampObject.getStamp());
         }
@@ -595,4 +605,48 @@ public class Tools {
         pane.getChildren().add(lbl);
     }
 
+    public class MouseGestures {
+
+        class DragContext {
+            double x;
+            double y;
+        }
+
+        DragContext dragContext = new DragContext();
+
+        public void makeDraggable(Node node) {
+            node.setOnMousePressed(onMousePressedEventHandler);
+            node.setOnMouseDragged(onMouseDraggedEventHandler);
+        }
+
+        EventHandler<MouseEvent> onMousePressedEventHandler = event -> {
+            if (event.getButton().equals(MouseButton.PRIMARY)) {
+                pane.setOnMouseReleased(event1 -> {
+
+                });
+                Node node = ((Node) (event.getSource()));
+
+                dragContext.x = node.getTranslateX() - event.getSceneX();
+                dragContext.y = node.getTranslateY() - event.getSceneY();
+            }
+        };
+
+        EventHandler<MouseEvent> onMouseDraggedEventHandler = event -> {
+            if (event.getButton().equals(MouseButton.PRIMARY)) {
+                Node node = ((Node) (event.getSource()));
+
+                node.setTranslateX(dragContext.x + event.getSceneX());
+                node.setTranslateY(dragContext.y + event.getSceneY());
+            }
+        };
+    }
+
+//    public Object getLastElement(Collection collection) {
+//        Iterator itr = collection.iterator();
+//        Object lastElement = itr.next();
+//        while (itr.hasNext()) {
+//            lastElement = itr.next();
+//        }
+//        return lastElement;
+//    }
 }

@@ -141,22 +141,22 @@ public class ShapeObject {
                     contextMenu = new ContextMenu();
                     contextMenu.hide();
                     if (type == "LENGTH") {
-                        MenuItem removeLength = new MenuItem("Remove Length");
+                        MenuItem removeLength = new MenuItem("Remove Line");
                         removeLength.setOnAction(event1 -> {
                             tools.page.shapeObjList.remove(this);
                             tools.updateWindow();
                         });
                         contextMenu.getItems().add(removeLength);
-                    } else {
-                        MenuItem removeArea = new MenuItem("Remove Area");
-                        removeArea.setOnAction(event1 -> {
-                            tools.page.shapeObjList.remove(this);
-                            tools.updateWindow();
-                        });
-
-                        contextMenu.getItems().add(removeArea);
-
                     }
+//                    else {
+//                        MenuItem removeArea = new MenuItem("Remove Line");
+//                        removeArea.setOnAction(event1 -> {
+//                            tools.page.shapeObjList.remove(this);
+//                            tools.updateWindow();
+//                        });
+//
+//                        contextMenu.getItems().add(removeArea);
+//                    }
                     contextMenu.show(l, event.getScreenX(), event.getScreenY());
                 }
             });
@@ -214,11 +214,14 @@ public class ShapeObject {
 
     public void createPolygon(List<Point2D> point2DS) {
         this.polygon = new Polygon();
+
         for (int x = 0; x < point2DS.size() - 1; x++) {
             double px = point2DS.get(x).getX();
             double py = point2DS.get(x).getY();
             polygon.getPoints().add(px);
             polygon.getPoints().add(py);
+
+
         }
         polygon.setFill(color);
         polygon.setOpacity(.3);

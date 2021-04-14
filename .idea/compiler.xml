@@ -10,6 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="JSON" target="1.2" />
       <module name="PlanEditor" target="1.5" />
     </bytecodeTargetLevel>
   </component>

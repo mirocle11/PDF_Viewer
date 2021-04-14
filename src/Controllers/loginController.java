@@ -8,11 +8,10 @@ import javafx.scene.control.TextField;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-
-import java.net.HttpURLConnection;
+import java.util.ResourceBundle;
 
 public class loginController implements Initializable {
 
@@ -59,8 +58,7 @@ public class loginController implements Initializable {
 //                    response.add(line);
 //                }
 
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(http.getInputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(http.getInputStream()));
                 String inputLine;
                 StringBuffer response = new StringBuffer();
                 while ((inputLine = in.readLine()) != null) {

@@ -9,6 +9,7 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/libraries/jfoenix-8.0.8.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libraries/pdfbox-app-2.0.22.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libraries/Spire.Pdf.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libraries/java-json.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="359.0" prefWidth="506.0" style="-fx-background-color: TRANSPARENT;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.loginController">
+   <children>
+      <AnchorPane layoutX="39.0" layoutY="44.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="272.0" prefWidth="429.0" style="-fx-background-radius: 30px; -fx-background-color: WHITE;">
+         <effect>
+            <DropShadow />
+         </effect>
+         <children>
+            <Label alignment="CENTER" layoutX="14.0" layoutY="5.0" prefHeight="37.0" prefWidth="99.0" text="Login Form" textFill="#737373">
+               <font>
+                  <Font name="Segoe UI Bold" size="15.0" />
+               </font>
+            </Label>
+            <Separator layoutX="14.0" layoutY="35.0" prefHeight="15.0" prefWidth="398.0" />
+            <JFXButton fx:id="LOGIN" alignment="CENTER" contentDisplay="CENTER" layoutX="146.0" layoutY="204.0" prefHeight="40.0" prefWidth="131.0" style="-fx-background-color: lightgray; -fx-background-radius: 20px;" text="Login" textFill="#737373">
+               <tooltip>
+                  <Tooltip text="Notes">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Tooltip>
+               </tooltip>
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+               <effect>
+                  <DropShadow />
+               </effect>
+            </JFXButton>
+            <JFXButton fx:id="CLOSE" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" layoutX="367.0" layoutY="5.0" prefHeight="30.0" prefWidth="32.0">
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/multiply_30px.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Notes">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Tooltip>
+               </tooltip>
+            </JFXButton>
+            <TextField fx:id="USERNAME" layoutX="75.0" layoutY="94.0" prefHeight="30.0" prefWidth="292.0" promptText="Username..">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </TextField>
+            <PasswordField fx:id="PASSWORD" layoutX="75.0" layoutY="150.0" prefHeight="30.0" prefWidth="292.0" promptText="Password..">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </PasswordField>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

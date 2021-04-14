@@ -50,7 +50,7 @@ public class MultipartUtility {
         httpConn.setDoInput(true);
         httpConn.setRequestProperty("Content-Type",
                 "multipart/form-data; boundary=" + boundary);
-        httpConn.setRequestProperty("Authorization", "Bearer AktNwEPl0yEusBuxry2aVVWpPw9h7WYhuBoMDc1W");
+        httpConn.setRequestProperty("Authorization", "Bearer dRCxVMeCrR4IzDGx1VjMBgUQqVmKNXjYeJ0zfjgm");
         httpConn.setRequestProperty("Accept", "application/json");
 
         outputStream = httpConn.getOutputStream();

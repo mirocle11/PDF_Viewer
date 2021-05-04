@@ -2,7 +2,6 @@ package Controllers;
 
 import Main.Main;
 import Model.PageObject;
-import Model.SessionModel;
 import Model.ShapeObject;
 import Service.Tools;
 import com.jfoenix.controls.JFXButton;
@@ -40,7 +39,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 import java.util.ResourceBundle;
 
 public class workspaceController implements Initializable {
@@ -54,13 +52,13 @@ public class workspaceController implements Initializable {
     }
 
     //components
-    public HBox DRAW_OPTIONS, STAMP_OPTIONS, NOTES_OPTIONS;
+    public HBox DRAW_OPTIONS, STAMP_OPTIONS, NOTES_OPTIONS, WINDOW_BOX, DOOR_BOX, STAMP_BOX;
     public VBox ACCOUNT_DETAILS;
     public JFXButton FILE, PREVIOUS_PAGE, NEXT_PAGE, ROTATE_LEFT, ROTATE_RIGHT,
             DRAW, STAMP, NOTES, LINE, STAMP_DRAG;
-    public ColorPicker DRAW_COLOR, NOTES_COLOR;
-    public TextField PAGE, NOTES_TXT;
-    public ComboBox<String> STAMP_COLOR;
+    public ColorPicker DRAW_COLOR, NOTES_COLOR, WINDOWS_COLOR, DOORS_COLOR;
+    public TextField PAGE, NOTES_TXT, WINDOWS_NO, DOORS_NO;
+    public ComboBox<String> STAMP_TYPE, STAMP_COLOR;
     public Label TOTAL_PAGE, NAME, EMAIL;
     public Canvas canvas, pane_canvas;
     public Pane pane;
@@ -97,6 +95,7 @@ public class workspaceController implements Initializable {
     ArrayList<double[][]> snapList = new ArrayList<>();
     public ArrayList<ShapeObject> shapeObjList = new ArrayList<>();
     private final ObservableList<String> stamp_color = FXCollections.observableArrayList("Blue", "Red", "Green");
+    private final ObservableList<String> stamp_type = FXCollections.observableArrayList("Misc", "Windows", "Doors");
 
     //page
     public PageObject page;
@@ -129,6 +128,7 @@ public class workspaceController implements Initializable {
         tools.setMode("FREE");
 
         STAMP_COLOR.setItems(stamp_color);
+        STAMP_TYPE.setItems(stamp_type);
 
         scroller.viewportBoundsProperty().addListener((observable, oldValue, newValue) ->
                 zoomPane.setMinSize(newValue.getWidth(), newValue.getHeight()));
@@ -147,7 +147,8 @@ public class workspaceController implements Initializable {
                 DRAW_OPTIONS.setVisible(false);
                 STAMP_OPTIONS.setVisible(true);
                 NOTES_OPTIONS.setVisible(false);
-                tools.setMode("STAMP");
+//                tools.setMode("STAMP");
+                tools.setMode("FREE");
             } else {
                 DRAW_OPTIONS.setVisible(false);
                 STAMP_OPTIONS.setVisible(false);
@@ -155,6 +156,15 @@ public class workspaceController implements Initializable {
                 tools.setMode("FREE");
             }
         });
+//
+//        WINDOW_AUTO.setOnAction(event -> {
+//            if (!WINDOW_AUTO.isSelected()) {
+//                WINDOWS_NO.setDisable(false);
+//            } else {
+//                WINDOWS_NO.setDisable(true);
+//            }
+//        });
+
         NOTES.setOnAction(event -> {
             if (!NOTES_OPTIONS.isVisible()) {
                 NOTES_OPTIONS.setVisible(true);
@@ -174,7 +184,7 @@ public class workspaceController implements Initializable {
         FILE_MENU.getItems().add(FILE_OPEN);
         FILE_MENU.getItems().add(FILE_SAVE);
         FILE_MENU.getItems().add(FILE_CREATE_DOC);
-        FILE_MENU.getItems().add(FILE_LOGIN);
+//        FILE_MENU.getItems().add(FILE_LOGIN);
 
         FILE.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
@@ -188,14 +198,14 @@ public class workspaceController implements Initializable {
         FILE_OPEN.setOnAction(event -> {
             try {
                 tools.open();
-                loadSaveButton();
+//                loadSaveButton();
             } catch (IOException exception) {
 //                exception.printStackTrace();
             }
         });
 
         FILE_SAVE.setDisable(true);
-//        loadSaveButton();
+//       loadSaveButton();
 
         FILE_SAVE.setOnAction(event -> {
             tools.save();
@@ -207,6 +217,47 @@ public class workspaceController implements Initializable {
 
         NEXT_PAGE.setOnAction(event -> {
             tools.nextPage();
+        });
+
+        STAMP_TYPE.setOnMouseClicked(event -> {
+            if (!STAMP_TYPE.getSelectionModel().isEmpty()) {
+                if (STAMP_TYPE.getSelectionModel().getSelectedItem().equals("Misc")) {
+                    STAMP_BOX.setVisible(true);
+                    WINDOW_BOX.setVisible(false);
+                    DOOR_BOX.setVisible(false);
+                    tools.setMode("STAMP");
+                } else if (STAMP_TYPE.getSelectionModel().getSelectedItem().equals("Windows")) {
+                    STAMP_BOX.setVisible(false);
+                    WINDOW_BOX.setVisible(true);
+                    DOOR_BOX.setVisible(false);
+                    tools.setMode("STAMP_WINDOWS");
+                } else if (STAMP_TYPE.getSelectionModel().getSelectedItem().equals("Doors")) {
+                    STAMP_BOX.setVisible(false);
+                    WINDOW_BOX.setVisible(false);
+                    DOOR_BOX.setVisible(true);
+                }
+            }
+        });
+
+        STAMP_TYPE.setOnAction(event -> {
+            if (!STAMP_TYPE.getSelectionModel().isEmpty()) {
+                if (STAMP_TYPE.getSelectionModel().getSelectedItem().equals("Misc")) {
+                    STAMP_BOX.setVisible(true);
+                    WINDOW_BOX.setVisible(false);
+                    DOOR_BOX.setVisible(false);
+                    tools.setMode("STAMP");
+                } else if (STAMP_TYPE.getSelectionModel().getSelectedItem().equals("Windows")) {
+                    STAMP_BOX.setVisible(false);
+                    WINDOW_BOX.setVisible(true);
+                    DOOR_BOX.setVisible(false);
+                    tools.setMode("STAMP_WINDOWS");
+                } else if (STAMP_TYPE.getSelectionModel().getSelectedItem().equals("Doors")) {
+                    STAMP_BOX.setVisible(false);
+                    WINDOW_BOX.setVisible(false);
+                    DOOR_BOX.setVisible(true);
+                    tools.setMode("STAMP_DOORS");
+                }
+            }
         });
 
         STAMP_COLOR.setOnAction(event -> {

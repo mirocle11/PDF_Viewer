@@ -1,9 +1,9 @@
 package Controllers;
 
-import Main.Main;
 import Service.MultipartUtility;
 import com.jfoenix.controls.JFXButton;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -49,7 +49,7 @@ public class addDocumentController implements Initializable {
                     out.close();
 
                     String charset = "UTF-8";
-                    String requestURL = "https://staging.ptbcsitest.net/api/plan-editor-file";
+                    String requestURL = "https://thedraftingzone.com/api/plan-editor-file";
 
                     try {
                         MultipartUtility multipart = new MultipartUtility(requestURL, charset);
@@ -64,8 +64,19 @@ public class addDocumentController implements Initializable {
                         for (String line : response) {
                             System.out.println(line);
                         }
+
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Success");
+                        alert.setHeaderText("File Upload!");
+                        alert.setContentText("File uploaded successfully.");
+                        alert.showAndWait();
                     } catch (IOException exception) {
                         exception.printStackTrace();
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText("File Upload!");
+                        alert.setContentText("Error in uploading file. Please try again.");
+                        alert.showAndWait();
                     }
 
                     JOptionPane.showMessageDialog(null, "Notes document exported.",

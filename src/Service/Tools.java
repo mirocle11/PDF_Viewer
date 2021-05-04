@@ -9,7 +9,10 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.*;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -20,9 +23,10 @@ import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Tools {
 
@@ -54,9 +58,15 @@ public class Tools {
     // indicator
     public int notes_id = 0;
     public int stamp_id = 0;
+    public int windows_id = 0;
+    public int doors_id = 0;
     public int stamp_drag = 0;
 
     double total;
+
+//    public Color windows_color = new Color(0,0,0,0);
+    int w_num = 0;
+    int d_num = 0;
 
     public Tools(PageObject page, Group group, String mode, Line line, Circle circle, VBox box) {
         this.page = page;
@@ -155,6 +165,8 @@ public class Tools {
 
                         window.PAGE.setText(String.valueOf(pageNumber + 1));
                         window.TOTAL_PAGE.setText("of " + pageObjects.size());
+
+                        window.loadSaveButton();
                     }
                 }
             });
@@ -310,6 +322,94 @@ public class Tools {
                 page.getNotesObjectList().add(notesObject);
             }
         };
+        EventHandler<MouseEvent> onMouseClickedEventHandlerWindows = event -> {
+            if (event.getButton() == MouseButton.PRIMARY && mode.equals("STAMP_WINDOWS")) {
+
+                if (!window.WINDOWS_NO.getText().equals("")) {
+                    w_num = Integer.parseInt(window.WINDOWS_NO.getText());
+                }
+
+                Label window_lbl = new Label();
+                window_lbl.setText("W " + w_num++);
+                window_lbl.setTextFill(window.WINDOWS_COLOR.getValue());
+                window_lbl.setFont(new Font("Segoe UI", 32));
+                window_lbl.setWrapText(true);
+                window_lbl.setMaxWidth(550);
+                window_lbl.setStyle("-fx-border-color: #ff0000;");
+                window_lbl.setAlignment(Pos.CENTER);
+                window_lbl.setLayoutX(event.getX() - 50);
+                window_lbl.setLayoutY(event.getY() - 40);
+
+                pane.getChildren().add(window_lbl);
+
+                WindowsObject windowsObject = new WindowsObject();
+                windowsObject.setWindows(window_lbl);
+                windowsObject.setColor(window.WINDOWS_COLOR.getValue());
+                windowsObject.setWindowsNo(windows_id++);
+
+                window_lbl.setOnMouseClicked(event1 -> {
+                    if (event1.getButton() == MouseButton.SECONDARY) {
+                        stampMenu = new ContextMenu();
+                        stampMenu.hide();
+
+                        MenuItem removeStamp = new MenuItem("Remove Stamp");
+                        removeStamp.setOnAction(event2 -> {
+                            window_lbl.setVisible(false);
+                        });
+                        stampMenu.getItems().add(removeStamp);
+                        stampMenu.show(window_lbl, event1.getScreenX(), event1.getScreenY());
+                    }
+                });
+                MouseGestures mg = new MouseGestures();
+                mg.makeDraggable(window_lbl);
+
+                page.getWindowsObjectList().add(windowsObject);
+            }
+        };
+        EventHandler<MouseEvent> onMouseClickedEventHandlerDoors = event -> {
+            if (event.getButton() == MouseButton.PRIMARY && mode.equals("STAMP_DOORS")) {
+
+                if (!window.DOORS_NO.getText().equals("")) {
+                    d_num = Integer.parseInt(window.DOORS_NO.getText());
+                }
+
+                Label doors = new Label();
+                doors.setText("D " + d_num++);
+                doors.setTextFill(window.DOORS_COLOR.getValue());
+                doors.setFont(new Font("Segoe UI", 32));
+                doors.setWrapText(true);
+                doors.setMaxWidth(550);
+                doors.setStyle("-fx-border-color: #ff0000;");
+                doors.setAlignment(Pos.CENTER);
+                doors.setLayoutX(event.getX() - 50);
+                doors.setLayoutY(event.getY() - 40);
+
+                pane.getChildren().add(doors);
+
+                DoorsObject doorsObject = new DoorsObject();
+                doorsObject.setDoors(doors);
+                doorsObject.setColor(window.DOORS_COLOR.getValue());
+                doorsObject.setDoorsNo(doors_id++);
+
+                doors.setOnMouseClicked(event1 -> {
+                    if (event1.getButton() == MouseButton.SECONDARY) {
+                        stampMenu = new ContextMenu();
+                        stampMenu.hide();
+
+                        MenuItem removeStamp = new MenuItem("Remove Stamp");
+                        removeStamp.setOnAction(event2 -> {
+                            doors.setVisible(false);
+                        });
+                        stampMenu.getItems().add(removeStamp);
+                        stampMenu.show(doors, event1.getScreenX(), event1.getScreenY());
+                    }
+                });
+                MouseGestures mg = new MouseGestures();
+                mg.makeDraggable(doors);
+
+                page.getDoorsObjectList().add(doorsObject);
+            }
+        };
 
         switch (mode) {
             case "FREE":
@@ -351,13 +451,23 @@ public class Tools {
                 this.canDraw = false;
                 pane_canvas.setVisible(false);
                 pane.setOnMouseReleased(onMouseClickedEventHandlerNotes);
-
                 break;
             case "STAMP":
                 this.canDraw = false;
                 pane_canvas.setVisible(false);
                 pane.setOnMouseReleased(onMouseClickedEventHandlerStamp);
                 break;
+            case "STAMP_WINDOWS":
+                this.canDraw = false;
+                pane_canvas.setVisible(false);
+                pane.setOnMouseReleased(onMouseClickedEventHandlerWindows);
+                break;
+            case "STAMP_DOORS":
+                this.canDraw = false;
+                pane_canvas.setVisible(false);
+                pane.setOnMouseReleased(onMouseClickedEventHandlerDoors);
+                break;
+
             case "FREE_FORM":
                 this.pane.setOnMouseReleased(event -> {
                     //do nothing
@@ -572,6 +682,14 @@ public class Tools {
             pane.getChildren().addAll(notesObject.getNotes());
         }
 
+        for (WindowsObject windowsObject : page.getWindowsObjectList()) {
+            pane.getChildren().addAll(windowsObject.getWindows());
+        }
+
+        for (DoorsObject doorsObject : page.getDoorsObjectList()) {
+            pane.getChildren().addAll(doorsObject.getDoors());
+        }
+
         pane.getChildren().add(line);
         line.setVisible(false);
         pane.getChildren().forEach(node -> {
@@ -638,13 +756,18 @@ public class Tools {
                 node.setTranslateX(dragContext.x + event.getSceneX());
                 node.setTranslateY(dragContext.y + event.getSceneY());
             }
+
+            window.NOTES_OPTIONS.setVisible(false);
+            window.STAMP_BOX.setVisible(false);
+            window.WINDOW_BOX.setVisible(false);
         };
     }
 
 //    public Object getLastElement(Collection collection) {
 //        Iterator itr = collection.iterator();
 //        Object lastElement = itr.next();
-//        while (itr.hasNext()) {
+//        while (itr.h
+//        sNext()) {
 //            lastElement = itr.next();
 //        }
 //        return lastElement;

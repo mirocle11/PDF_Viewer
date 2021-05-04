@@ -13,6 +13,8 @@ public class PageObject {
     public ArrayList<StampObject> stampObjectList = new ArrayList<>();
     public ArrayList<NotesObject> notesObjectList = new ArrayList<>();
     public ArrayList<PolylineObject> polyLineObjectList = new ArrayList<>();
+    public ArrayList<WindowsObject> windowsObjectList = new ArrayList<>();
+    public ArrayList<DoorsObject> doorsObjectList = new ArrayList<>();
 
     ArrayList<Shape> stampList = new ArrayList<>();
     ArrayList<double[][]> snapList = new ArrayList<>();
@@ -110,5 +112,18 @@ public class PageObject {
 
     public void setPolyLineObjectList(ArrayList<PolylineObject> polyLineObjectList) {
         this.polyLineObjectList = polyLineObjectList;
+    }
+
+    public ArrayList<WindowsObject> getWindowsObjectList() {
+        return windowsObjectList;
+    }
+
+
+    public ArrayList<DoorsObject> getDoorsObjectList() {
+        return doorsObjectList;
+    }
+
+    public void setDoorsObjectList(ArrayList<DoorsObject> doorsObjectList) {
+        this.doorsObjectList = doorsObjectList;
     }
 }

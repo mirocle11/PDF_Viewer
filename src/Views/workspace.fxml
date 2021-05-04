@@ -316,17 +316,67 @@
                      </HBox.margin>
                   </Label>
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
-                  <ComboBox fx:id="STAMP_COLOR" prefHeight="40.0" prefWidth="90.0" promptText="Color">
+                  <ComboBox fx:id="STAMP_TYPE" prefHeight="40.0" prefWidth="90.0" promptText="Type">
                      <HBox.margin>
                         <Insets top="10.0" />
                      </HBox.margin>
                   </ComboBox>
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
-                  <ListView fx:id="STAMP_LIST" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="HORIZONTAL" prefHeight="50.0" prefWidth="670.0">
-                     <HBox.margin>
-                        <Insets top="5.0" />
-                     </HBox.margin>
-                  </ListView>
+                  <AnchorPane prefHeight="59.0" prefWidth="665.0">
+                     <children>
+                        <HBox fx:id="STAMP_BOX" prefHeight="58.0" prefWidth="661.0" spacing="10.0" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <ComboBox fx:id="STAMP_COLOR" prefHeight="40.0" prefWidth="90.0" promptText="Color">
+                                 <HBox.margin>
+                                    <Insets top="10.0" />
+                                 </HBox.margin>
+                              </ComboBox>
+                              <Separator orientation="VERTICAL" prefHeight="62.0" prefWidth="5.0" />
+                              <ListView fx:id="STAMP_LIST" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="HORIZONTAL" prefHeight="50.0" prefWidth="526.0">
+                                 <HBox.margin>
+                                    <Insets top="5.0" />
+                                 </HBox.margin>
+                              </ListView>
+                           </children>
+                        </HBox>
+                        <HBox fx:id="WINDOW_BOX" prefHeight="59.0" prefWidth="669.0" spacing="10.0" visible="false">
+                           <children>
+                              <ColorPicker fx:id="WINDOWS_COLOR" prefHeight="40.0" prefWidth="100.0">
+                                 <HBox.margin>
+                                    <Insets top="10.0" />
+                                 </HBox.margin>
+                              </ColorPicker>
+                              <Separator orientation="VERTICAL" prefHeight="200.0" />
+                              <TextField fx:id="WINDOWS_NO" prefHeight="40.0" prefWidth="94.0" promptText="Window No.">
+                                 <HBox.margin>
+                                    <Insets top="10.0" />
+                                 </HBox.margin>
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </TextField>
+                           </children>
+                        </HBox>
+                        <HBox fx:id="DOOR_BOX" layoutX="10.0" layoutY="10.0" prefHeight="59.0" prefWidth="669.0" spacing="10.0" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <ColorPicker fx:id="DOORS_COLOR" prefHeight="40.0" prefWidth="100.0">
+                                 <HBox.margin>
+                                    <Insets top="10.0" />
+                                 </HBox.margin>
+                              </ColorPicker>
+                              <Separator orientation="VERTICAL" prefHeight="200.0" />
+                              <TextField fx:id="DOORS_NO" prefHeight="40.0" prefWidth="94.0" promptText="Door No.">
+                                 <HBox.margin>
+                                    <Insets top="10.0" />
+                                 </HBox.margin>
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </TextField>
+                           </children>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
                   <JFXButton fx:id="STAMP_DRAG" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" prefHeight="50.0" prefWidth="50.0">
                      <graphic>

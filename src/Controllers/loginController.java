@@ -1,10 +1,12 @@
 package Controllers;
 
+import Main.Main;
 import com.jfoenix.controls.JFXButton;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -20,11 +22,14 @@ public class loginController implements Initializable {
     public PasswordField PASSWORD;
     public static String name = "";
     public static String email = "";
+    public Main main;
+    public Stage stage;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         CLOSE.setOnAction(event -> {
-            workspaceController.closeLoginStage();
+//            workspaceController.closeLoginStage();
+            System.exit(0);
         });
 
         LOGIN.setOnAction(event -> {
@@ -47,8 +52,7 @@ public class loginController implements Initializable {
                 stream.write(out);
 
                 OutputStream outputStream = http.getOutputStream();
-                PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, charset),
-                        true);
+                PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, charset), true);
 
 //                List<String> response = new ArrayList<String>();
 //
@@ -70,20 +74,22 @@ public class loginController implements Initializable {
                 System.out.println(http.getResponseCode() + " " + http.getResponseMessage());
                 http.disconnect();
 
-                if (http.getResponseCode() == 200) {
-                    workspaceController.login_identifier = true;
+            if (http.getResponseCode() == 200) {
+                workspaceController.login_identifier = true;
 
-                    JSONObject myResponse = new JSONObject(response.toString());
-                    name = myResponse.getString("name");
-                    email = myResponse.getString("email");
+                JSONObject myResponse = new JSONObject(response.toString());
+                name = myResponse.getString("name");
+                email = myResponse.getString("email");
 
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Success");
-                    alert.setHeaderText("Welcome " + name + "!");
-                    alert.setContentText("Login successful, you may now proceed.");
-                    alert.showAndWait();
-                    workspaceController.closeLoginStage();
-                }
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText("Welcome " + name + "!");
+                alert.setContentText("Login successful, you may now proceed.");
+                alert.showAndWait();
+
+                main.closeLoginStage();
+                main.loadMainWindow();
+            }
 
 //            } catch (JSONException exception) {
 //                exception.printStackTrace();
@@ -100,6 +106,12 @@ public class loginController implements Initializable {
                 email = "";
             }
         });
+
+    }
+
+    public void setMain(Stage stage, Main main) {
+        this.main = main;
+        this.stage = stage;
     }
 
 }

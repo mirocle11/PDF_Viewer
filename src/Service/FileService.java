@@ -129,6 +129,7 @@ public class FileService {
                     page.getCanvas().drawRectangle(pen, windowsObject.getWindows().getLayoutX() / subX,
                             (windowsObject.getWindows().getLayoutY() / subY) - 1.8, windowsObject.getWindows().getWidth() / 2 - 10,
                             (windowsObject.getWindows().getHeight() / 2) - 5);
+
                     page.getCanvas().drawString(windowsObject.getWindows().getText(), font, pen,
                             (windowsObject.getWindows().getLayoutX() / subX) + 2,
                             (windowsObject.getWindows().getLayoutY() / subY) - 1.8 + 2);

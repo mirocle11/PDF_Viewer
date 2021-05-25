@@ -329,13 +329,21 @@ public class Tools {
                     w_num = Integer.parseInt(window.WINDOWS_NO.getText());
                 }
 
+                String content = "";
+                if (!window.WINDOWS_WIDTH.getText().equals("") || !window.WINDOWS_HEIGHT.getText().equals("")) {
+                    content = "       W" + w_num + "\n        " + window.WINDOWS_WIDTH.getText() +
+                            " x " + window.WINDOWS_HEIGHT.getText() + "        ";
+                } else {
+                    content = "       W" + w_num;
+                }
+
                 Label window_lbl = new Label();
-                window_lbl.setText("W " + w_num++);
+                window_lbl.setText(content);
                 window_lbl.setTextFill(window.WINDOWS_COLOR.getValue());
                 window_lbl.setFont(new Font("Segoe UI", 32));
                 window_lbl.setWrapText(true);
                 window_lbl.setMaxWidth(550);
-                window_lbl.setStyle("-fx-border-color: #ff0000;");
+                window_lbl.setStyle("-fx-border-color: gray;");
                 window_lbl.setAlignment(Pos.CENTER);
                 window_lbl.setLayoutX(event.getX() - 50);
                 window_lbl.setLayoutY(event.getY() - 40);
@@ -373,8 +381,16 @@ public class Tools {
                     d_num = Integer.parseInt(window.DOORS_NO.getText());
                 }
 
+                String content = "";
+                if (!window.DOORS_WIDTH.getText().equals("") || !window.DOORS_HEIGHT.getText().equals("")) {
+                    content = "       D" + d_num + "\n        " + window.DOORS_WIDTH.getText() +
+                            " x " + window.DOORS_HEIGHT.getText() + "        ";
+                } else {
+                    content = "       D" + d_num;
+                }
+
                 Label doors = new Label();
-                doors.setText("D " + d_num++);
+                doors.setText(content);
                 doors.setTextFill(window.DOORS_COLOR.getValue());
                 doors.setFont(new Font("Segoe UI", 32));
                 doors.setWrapText(true);
